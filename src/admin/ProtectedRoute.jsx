@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div style={{ backgroundColor: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+      <div style={{ backgroundColor: '#00', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
         Loading...
       </div>
     )
