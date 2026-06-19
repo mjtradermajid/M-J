@@ -15,6 +15,7 @@ import OrderPage from './pages/OrderPage'
 import CheckoutPage from './pages/checkout'
 import Cart from './pages/cart'
 import AdminReviews from './admin/AdminReviews'
+import ProtectedRoute from './admin/ProtectedRoute'
 
 function App() {
   return (
@@ -30,17 +31,19 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/cart" element={<Cart />} />
 
-        {/* Admin Routes */}
+        {/* Admin Login - public, koi guard nahi */}
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/products" element={<AdminProducts />} />
-        <Route path="/admin/installments" element={<Installments />} />
-        <Route path="/admin/categories" element={<Categories />} />
-        <Route path="/admin/expenses" element={<Expenses />} />
-        <Route path="/admin/orders" element={<Orders />} />
-        <Route path="/admin/discounts" element={<AdminDiscounts />} />
-        <Route path="/admin/reviews" element={<AdminReviews />} />
+
+        {/* Admin Protected Routes - ProtectedRoute se wrapped */}
+        <Route path="/admin/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin/products" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
+        <Route path="/admin/installments" element={<ProtectedRoute><Installments /></ProtectedRoute>} />
+        <Route path="/admin/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+        <Route path="/admin/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+        <Route path="/admin/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/admin/discounts" element={<ProtectedRoute><AdminDiscounts /></ProtectedRoute>} />
+        <Route path="/admin/reviews" element={<ProtectedRoute><AdminReviews /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
