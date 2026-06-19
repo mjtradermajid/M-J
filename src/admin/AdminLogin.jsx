@@ -63,7 +63,7 @@ function AdminLogin() {
             <motion.span style={{ color: '#B8960C' }}
               animate={{ textShadow: ['0 0 10px #B8960C', '0 0 30px #B8960C', '0 0 10px #B8960C'] }}
               transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}>J</motion.span>
-            <span style={{ color: '#EEEEEE', fontSize: '16px', marginLeft: '8px', fontWeight: 400, letterSpacing: '3px' }}>STORE</span>
+            <span style={{ color: '#EEEEEE', fontSize: '16px', marginLeft: '8px', fontWeight: 400, letterSpacing: '3px' }}>TRADERS</span>
           </div>
           <p style={{ color: '#EEEEEE55', fontSize: '13px', letterSpacing: '2px' }}>ADMIN PANEL</p>
           <div style={{ width: '40px', height: '2px', background: 'linear-gradient(to right, #CF0A0A, #DC5F00)', margin: '10px auto 0', borderRadius: '2px' }} />
