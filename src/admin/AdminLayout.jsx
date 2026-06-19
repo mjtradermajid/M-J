@@ -5,6 +5,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Tag,
   Star, LogOut, Menu, X, ChevronRight, Percent, CreditCard, Receipt
 } from 'lucide-react'
+import { adminLogout } from '../firebase/auth'
 
 const menuItems = [
   { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin/dashboard' },
@@ -22,8 +23,8 @@ function AdminLayout({ children }) {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const handleLogout = () => {
-    localStorage.removeItem('mjAdmin')
+  const handleLogout = async () => {
+    await adminLogout()
     navigate('/admin')
   }
 
