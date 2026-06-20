@@ -17,7 +17,7 @@ const menuItems = [
   { icon: <Star size={20} />, label: 'Reviews', path: '/admin/reviews' },
   { icon: <CreditCard size={20} />, label: 'Installments', path: '/admin/installments' },
   { icon: <Receipt size={20} />, label: 'Expenses', path: '/admin/expenses' },
-  { icon: <MessageSquare size={20} />, label: 'Feedbacks', path: '/admin/feedbacks' },
+  
 ]
 
 function AdminLayout({ children }) {
