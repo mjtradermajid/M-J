@@ -13,7 +13,7 @@ const paymentMethods = {
   easypaisa: {
     id: 'easypaisa', label: 'EasyPaisa', desc: 'Pay via EasyPaisa mobile account',
     icon: <Wallet size={18} />, color: '#2E7D32',
-    details: { accountTitle: 'Abdul Majeed', accountNumber: '0345-9876543', }
+    details: { accountTitle: 'Abdul Majeed', accountNumber: '03499833707', }
   },  jazzcash: {
     id: 'jazzcash', label: 'JazzCash', desc: 'Pay via JazzCash mobile account',
     icon: <Smartphone size={18} />, color: '#9C27B0',
