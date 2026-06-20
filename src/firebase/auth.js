@@ -6,8 +6,11 @@ import {
 } from 'firebase/auth'
 
 // ✅ Sirf yeh email admin hai — apni email daalo
-const ADMIN_EMAIL = 'admin@mjs.com'
-
+// ✅ 2 admin emails
+const ADMIN_EMAILS = [
+  'majidaadii01@admin.com',
+  'junaidrumi099@admin.com'
+]
 // ===== ADMIN LOGIN =====
 export const adminLogin = async (email, password) => {
   try {
