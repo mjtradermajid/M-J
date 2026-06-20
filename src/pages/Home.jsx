@@ -3,7 +3,7 @@ import { ShoppingCart, ArrowRight, Truck, Shield, Headphones, ChevronRight, Zap,
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase/config'
-import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, where } from 'firebase/firestore'
+import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp } from 'firebase/firestore'
 
 import heroImg from '../assets/hero.png'
 import junaidDp from '../assets/junaiddp.png'
@@ -38,25 +38,6 @@ function AnimatedCounter({ target, suffix = '' }) {
   return <span>{count}{suffix}</span>
 }
 
-function getProductDiscount(productId, discounts) {
-  if (!discounts || discounts.length === 0) return null
-  const now = new Date()
-  return discounts.find(d => {
-    if (d.productId !== productId) return false
-    if (!d.isActive) return false
-    // Check date range if startDate and endDate exist
-    if (d.startDate) {
-      const start = new Date(d.startDate)
-      if (now < start) return false
-    }
-    if (d.endDate) {
-      const end = new Date(d.endDate)
-      if (now > end) return false
-    }
-    return true
-  }) || null
-}
-
 function timeAgo(timestamp) {
   if (!timestamp) return 'Just now'
   const now = new Date()
@@ -85,7 +66,6 @@ function Home() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [showHelp, setShowHelp] = useState(false)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
-  const [discounts, setDiscounts] = useState([])
 
   // Feedback states
   const [feedbacks, setFeedbacks] = useState([])
@@ -125,16 +105,6 @@ function Home() {
     return () => unsubscribe()
   }, [])
 
-  // Fetch active discounts
-  useEffect(() => {
-    const q = query(collection(db, 'discounts'), where('isActive', '==', true))
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const discountData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      setDiscounts(discountData)
-    }, (err) => console.error('Discount listener error:', err))
-    return () => unsubscribe()
-  }, [])
-
   useEffect(() => {
     try {
       const c = JSON.parse(localStorage.getItem('cart') || '[]')
@@ -163,26 +133,16 @@ function Home() {
 
   const handleOrderNow = (product, e) => {
     e.stopPropagation()
-    const discount = getProductDiscount(product.id, discounts)
-    const basePrice = Number(product.price || product.sellPrice || 0)
-    const discountAmount = discount ? Math.round(basePrice * (discount.discountPercent / 100)) : 0
-    const discountedPrice = discount ? basePrice - discountAmount : basePrice
-    const productWithDiscount = { ...product, price: discountedPrice, originalPrice: basePrice, discountPercent: discount ? discount.discountPercent : 0 }
-    navigate('/order', { state: { product: productWithDiscount, fromHome: true } })
+    navigate('/order', { state: { product, fromHome: true } })
   }
 
   const handleAddToCart = (product, e) => {
     e.stopPropagation()
     try {
-      const discount = getProductDiscount(product.id, discounts)
-      const basePrice = Number(product.price || product.sellPrice || 0)
-      const discountAmount = discount ? Math.round(basePrice * (discount.discountPercent / 100)) : 0
-      const discountedPrice = discount ? basePrice - discountAmount : basePrice
-      const productWithDiscount = { ...product, price: discountedPrice, originalPrice: basePrice, discountPercent: discount ? discount.discountPercent : 0 }
       const existing = JSON.parse(localStorage.getItem('cart') || '[]')
       const idx = existing.findIndex(x => x.id === product.id)
       if (idx > -1) existing[idx].qty = (existing[idx].qty || 1) + 1
-      else existing.push({ ...productWithDiscount, qty: 1 })
+      else existing.push({ ...product, qty: 1 })
       localStorage.setItem('cart', JSON.stringify(existing))
       setCartCount(existing.reduce((s, i) => s + (i.qty || 1), 0))
     } catch (err) { console.error('Cart error:', err) }
@@ -246,7 +206,7 @@ function Home() {
             <span style={{ color: '#EEEEEE', fontSize: '11px', marginLeft: '6px', fontWeight: 600, letterSpacing: '2px' }}>TRADERS</span>
           </motion.div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            {[{ label: 'Home', path: '/' }, { label: 'Products', path: '/products' }, { label: 'Track', path: '/track-order' }].map((link, i) => (
+            {[{ label: 'Home', path: '/' }, { label: 'Products', path: '/products' }, { label: 'Track', path: '/track-order' }, { label: 'About', path: '/about' }].map((link, i) => (
               <motion.button key={link.label} onClick={() => navigate(link.path)} initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }} whileHover={{ color: '#CF0A0A', y: -2 }} style={{ color: '#EEEEEE', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap' }}>{link.label}</motion.button>
             ))}
             <motion.div whileHover={{ scale: 1.2 }} style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/cart')}>
@@ -373,17 +333,13 @@ function Home() {
               <p style={{ fontSize: '16px', fontWeight: 600 }}>No products found</p>
             </div>
           ) : displayProducts.map((product, i) => {
-            const discount = getProductDiscount(product.id, discounts)
-            const basePrice = Number(product.price || product.sellPrice || 0)
-            const discountAmount = discount ? Math.round(basePrice * (discount.discountPercent / 100)) : 0
-            const currentPrice = discount ? basePrice - discountAmount : basePrice
-            const oldPrice = discount ? basePrice : Number(product.oldPrice || 0)
-            const discountPct = discount ? discount.discountPercent : (oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0)
-            const hasDiscount = discount !== null || oldPrice > currentPrice
+            const currentPrice = Number(product.price || product.sellPrice || 0)
+            const oldPrice = Number(product.oldPrice || 0)
+            const discountPct = oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0
             return (
               <motion.div key={product.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} whileHover={{ y: -6 }} transition={{ delay: i * 0.05, type: 'spring', stiffness: 150 }}
                 style={{ backgroundColor: '#111111', border: '1px solid #222222', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}>
-                {(product.badge || discount) && <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3, backgroundColor: discount ? '#CF0A0A' : product.badge === 'SALE' ? '#DC5F00' : product.badge === 'NEW' ? '#059669' : '#CF0A0A', color: 'white', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '20px' }}>{discount ? `-${discount.discountPercent}% OFF` : product.badge.toUpperCase()}</div>}
+                {product.badge && <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3, backgroundColor: product.badge === 'SALE' ? '#DC5F00' : product.badge === 'NEW' ? '#059669' : '#CF0A0A', color: 'white', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '20px' }}>{product.badge.toUpperCase()}</div>}
                 <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id) }}
                   style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 3, backgroundColor: '#00000088', border: 'none', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Heart size={13} fill={wishlist.includes(product.id) ? '#CF0A0A' : 'none'} style={{ color: wishlist.includes(product.id) ? '#CF0A0A' : '#EEEEEE' }} />
@@ -403,7 +359,7 @@ function Home() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
                     <p style={{ color: '#CF0A0A', fontSize: isMobile ? '15px' : '18px', fontWeight: 900 }}>Rs. {currentPrice.toLocaleString()}</p>
-                    {hasDiscount && <>
+                    {oldPrice > currentPrice && <>
                       <p style={{ color: '#EEEEEE33', fontSize: '11px', textDecoration: 'line-through' }}>Rs. {oldPrice.toLocaleString()}</p>
                       <span style={{ backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '10px' }}>-{discountPct}%</span>
                     </>}

@@ -16,6 +16,8 @@ import CheckoutPage from './pages/checkout'
 import Cart from './pages/cart'
 import AdminReviews from './admin/AdminReviews'
 import ProtectedRoute from './admin/ProtectedRoute'
+import About from './pages/about'
+import { Import } from 'lucide-react'
 
 function App() {
   return (
@@ -30,12 +32,16 @@ function App() {
         <Route path="/order" element={<OrderPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/about" element={<About />} />
+        
+       
+        <Route path="/about" element={<About />} />
 
-        {/* Admin Login - public, koi guard nahi */}
+        {/* Admin Login - public */}
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Admin Protected Routes - ProtectedRoute se wrapped */}
+        {/* Admin Protected Routes */}
         <Route path="/admin/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/admin/products" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
         <Route path="/admin/installments" element={<ProtectedRoute><Installments /></ProtectedRoute>} />
