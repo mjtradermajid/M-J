@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard, Package, ShoppingCart, Tag,
-  Star, LogOut, Menu, X, ChevronRight, Percent, CreditCard, Receipt
+  Star, LogOut, Menu, X, ChevronRight, Percent,
+  CreditCard, Receipt, MessageSquare, Loader2
 } from 'lucide-react'
-import { adminLogout } from '../firebase/auth'
+import { adminLogout, onAuthChange } from '../firebase/auth'
 
 const menuItems = [
   { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/admin/dashboard' },
@@ -16,18 +17,60 @@ const menuItems = [
   { icon: <Star size={20} />, label: 'Reviews', path: '/admin/reviews' },
   { icon: <CreditCard size={20} />, label: 'Installments', path: '/admin/installments' },
   { icon: <Receipt size={20} />, label: 'Expenses', path: '/admin/expenses' },
+  { icon: <MessageSquare size={20} />, label: 'Feedbacks', path: '/admin/feedbacks' },
 ]
 
 function AdminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
+  const [isAuthorized, setIsAuthorized] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
+  // ✅ AUTH GUARD — har render pe check hota hai
+  useEffect(() => {
+    const unsubscribe = onAuthChange((user) => {
+      if (user) {
+        setIsAuthorized(true)
+      } else {
+        setIsAuthorized(false)
+        // Login page pe redirect karo
+        navigate('/admin', { replace: true })
+      }
+      setAuthChecked(true)
+    })
+    return () => unsubscribe()
+  }, [navigate])
+
   const handleLogout = async () => {
     await adminLogout()
-    navigate('/admin')
+    navigate('/admin', { replace: true })
   }
 
+  // ===== LOADING STATE — auth check ho raha hai =====
+  if (!authChecked) {
+    return (
+      <div style={{
+        minHeight: '100vh', backgroundColor: '#000000',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        flexDirection: 'column', gap: '16px'
+      }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          style={{ width: '36px', height: '36px', border: '3px solid #CF0A0A', borderTopColor: 'transparent', borderRadius: '50%' }}
+        />
+        <p style={{ color: '#EEEEEE44', fontSize: '13px' }}>Verifying access...</p>
+      </div>
+    )
+  }
+
+  // ===== UNAUTHORIZED — kuch dikhao mat, redirect ho raha hai =====
+  if (!isAuthorized) {
+    return null
+  }
+
+  // ===== AUTHORIZED — admin panel dikhao =====
   return (
     <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#000000', color: '#EEEEEE' }}>
 
@@ -86,7 +129,7 @@ function AdminLayout({ children }) {
                 whileTap={{ scale: 0.97 }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ delay: i * 0.05 }}
                 style={{
                   display: 'flex', alignItems: 'center',
                   gap: '12px', padding: '11px 12px',

@@ -5,14 +5,23 @@ import {
   onAuthStateChanged
 } from 'firebase/auth'
 
+// ✅ Sirf yeh email admin hai — apni email daalo
+const ADMIN_EMAIL = 'admin@mjs.com'
+
 // ===== ADMIN LOGIN =====
 export const adminLogin = async (email, password) => {
   try {
+    // Pehle check karo email admin ki hai ya nahi
+    if (email.toLowerCase().trim() !== ADMIN_EMAIL.toLowerCase()) {
+      return { success: false, error: 'Access denied. Admin only.' }
+    }
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password)
     return { success: true, user: userCredential.user }
   } catch (error) {
     console.error('Login error:', error)
-    return { success: false, error: error.message }
+    // Firebase ki exact error message hide karo (security)
+    return { success: false, error: 'Invalid email or password.' }
   }
 }
 
@@ -29,10 +38,27 @@ export const adminLogout = async () => {
 
 // ===== AUTH STATE LISTENER =====
 export const onAuthChange = (callback) => {
-  return onAuthStateChanged(auth, callback)
+  return onAuthStateChanged(auth, (user) => {
+    // Sirf admin email wala user valid hai
+    if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+      callback(user)
+    } else {
+      callback(null)
+    }
+  })
 }
 
 // ===== CHECK IF ADMIN =====
 export const isAdmin = () => {
-  return auth.currentUser !== null
+  const user = auth.currentUser
+  return user !== null && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+}
+
+// ===== GET CURRENT ADMIN USER =====
+export const getCurrentAdmin = () => {
+  const user = auth.currentUser
+  if (user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+    return user
+  }
+  return null
 }
