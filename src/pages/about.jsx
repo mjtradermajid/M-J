@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Phone, Mail, MapPin, ShoppingCart, Truck, Shield, Headphones, Zap, Package, Globe } from 'lucide-react'
+import { Phone, Mail, MapPin, ShoppingCart, Truck, Shield, Headphones, Zap, Package, Globe } from 'lucide-react'
 
 export default function About() {
   const navigate = useNavigate()
@@ -15,20 +15,42 @@ export default function About() {
       <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
       {/* NAVBAR */}
-      <nav style={{ borderBottom: '1px solid #CF0A0A22', backgroundColor: '#0a0a0aee', backdropFilter: 'blur(20px)', padding: '14px 16px', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-          <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'baseline', gap: '2px' }}>
-            <span style={{ color: '#CF0A0A', fontSize: '24px', fontWeight: 900 }}>M</span>
-            <span style={{ color: '#CF0A0A', fontSize: '24px', fontWeight: 900 }}>&</span>
-            <span style={{ color: '#B8960C', fontSize: '24px', fontWeight: 900 }}>J</span>
-            <span style={{ color: '#EEEEEE', fontSize: '12px', marginLeft: '6px', letterSpacing: '2px', fontWeight: 600 }}>TRADERS</span>
+      <nav style={{ borderBottom: '1px solid #CF0A0A22', backgroundColor: '#0a0a0aee', backdropFilter: 'blur(20px)', padding: '12px 16px', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+          
+          {/* Logo Area */}
+          <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'baseline', flexShrink: 0 }}>
+            <span style={{ color: '#CF0A0A', fontSize: '18px', fontWeight: 900 }}>M</span>
+            <span style={{ color: '#CF0A0A', fontSize: '18px', fontWeight: 900 }}>&</span>
+            <span style={{ color: '#B8960C', fontSize: '18px', fontWeight: 900 }}>J</span>
+            <span style={{ color: '#EEEEEE', fontSize: '9px', marginLeft: '3px', letterSpacing: '1px', fontWeight: 600 }}>TRADERS</span>
           </div>
-          <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+
+          {/* Navigation Links */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             {[{ label: 'Home', path: '/' }, { label: 'Products', path: '/products' }, { label: 'Track', path: '/track-order' }, { label: 'About', path: '/about' }].map(link => (
-              <span key={link.path} onClick={() => navigate(link.path)} style={{ cursor: 'pointer', fontSize: '13px', color: link.path === '/about' ? '#CF0A0A' : '#EEEEEE88', fontWeight: link.path === '/about' ? 700 : 500, transition: 'color 0.2s' }}>{link.label}</span>
+              <span 
+                key={link.path} 
+                onClick={() => navigate(link.path)} 
+                style={{ 
+                  cursor: 'pointer', 
+                  fontSize: '11px', 
+                  color: link.path === '/about' ? '#CF0A0A' : '#EEEEEE88', 
+                  fontWeight: link.path === '/about' ? 700 : 500, 
+                  transition: 'color 0.2s',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {link.label}
+              </span>
             ))}
-            <ShoppingCart size={18} style={{ color: '#EEEEEE88', cursor: 'pointer', marginLeft: '4px' }} onClick={() => navigate('/cart')} />
+            <ShoppingCart 
+              size={14} 
+              style={{ color: '#EEEEEE88', cursor: 'pointer', marginLeft: '2px', flexShrink: 0 }} 
+              onClick={() => navigate('/cart')} 
+            />
           </div>
+
         </div>
       </nav>
 
@@ -49,9 +71,9 @@ export default function About() {
           </p>
         </motion.div>
 
-        {/* STATS (Fixed for mobile view grid auto-fit) */}
+        {/* STATS */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '44px' }}>
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginBottom: '44px' }}>
           {[
             { value: '100%', label: 'اصل مصنوعات', icon: <Shield size={20} /> },
             { value: '500+', label: 'مطمئن صارفین', icon: <Headphones size={20} /> },
@@ -101,7 +123,7 @@ export default function About() {
         {/* SERVICES */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} style={{ marginBottom: '44px' }}>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '24px', textAlign: 'center', direction: 'rtl' }}>
-             <span style={{ color: '#CF0A0A' }}>خدمات</span>
+            ہماری <span style={{ color: '#CF0A0A' }}>خدمات</span>
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
             {[
@@ -126,8 +148,8 @@ export default function About() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
           style={{ background: 'linear-gradient(135deg, #1a0000 0%, #0d0000 100%)', border: '1px solid #CF0A0A44', borderRadius: '14px', padding: '24px 16px', marginBottom: '44px', textAlign: 'center', direction: 'rtl' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
-            <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#CF0A0A22', border: '2px solid #CF0A0A55', display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
-              <Globe size={24} style={{ color: '#CF0A0A', margin: 'auto' }} />
+            <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: '#CF0A0A22', border: '2px solid #CF0A0A55', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Globe size={24} style={{ color: '#CF0A0A' }} />
             </div>
           </div>
           <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '10px', color: '#CF0A0A' }}>درآمد کی خدمات</h2>
@@ -145,13 +167,14 @@ export default function About() {
           </p>
         </motion.div>
 
-        {/* CONTACT (Fixed wrapping & grid bugs) */}
+        {/* CONTACT */}
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
           style={{ backgroundColor: '#111111', border: '1px solid #222', borderRadius: '14px', padding: '24px', marginBottom: '40px', direction: 'rtl' }}>
           <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px', textAlign: 'center' }}>
             <span style={{ color: '#CF0A0A' }}>رابطہ</span> کریں
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+            
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#CF0A0A22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Phone size={18} style={{ color: '#CF0A0A' }} />
@@ -181,6 +204,7 @@ export default function About() {
                 <p style={{ fontSize: '15px', fontWeight: '600' , margin: 0 }}>پشاور، پاکستان</p>
               </div>
             </div>
+
           </div>
         </motion.div>
 
