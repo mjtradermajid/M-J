@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, ShoppingCart, CheckCircle2, Phone, Package, XCircle, Clock, Truck, ChevronDown, ChevronUp } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase/config'
-import { collection, query, where, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, query, where, getDocs, doc, updateDoc, serverTimestamp, onSnapshot } from 'firebase/firestore'
 
 // Status config
 const statusConfig = {
@@ -76,36 +76,86 @@ function TrackOrder() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [trackingData, setTrackingData] = useState(null)
 
+  // Normalize phone number: removes all non-digits, handles +92/92 prefix
+  const normalizePhone = (phone) => {
+    if (!phone) return ''
+    let digits = phone.toString().replace(/[^0-9]/g, '')
+    if (digits.startsWith('92') && digits.length === 12) {
+      digits = '0' + digits.slice(2)
+    }
+    if (digits.startsWith('92') && digits.length > 11) {
+      digits = '0' + digits.slice(2)
+    }
+    return digits
+  }
+
+  const [unsubscribeListener, setUnsubscribeListener] = useState(null)
+
   const handlePhoneSearch = async (e) => {
     e.preventDefault()
-    const cleaned = phoneInput.replace(/[^0-9]/g, '')
+    const cleaned = normalizePhone(phoneInput)
     if (cleaned.length !== 11) {
-      setFetchError('Please enter a valid 11-digit phone number')
+      setFetchError('Please enter a valid 11-digit phone number (e.g., 03001234567)')
       return
     }
+
+    // Unsubscribe from any previous listener
+    if (unsubscribeListener) {
+      unsubscribeListener()
+      setUnsubscribeListener(null)
+    }
+
     setFetchingOrders(true)
     setFetchError('')
     setMyOrders([])
     setOrdersFetched(false)
+
     try {
-      const q = query(collection(db, 'orders'), where('phone', '==', cleaned))
-      const snap = await getDocs(q)
-      const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-      orders.sort((a, b) => {
-        const ta = a.createdAt?.toDate?.() || 0
-        const tb = b.createdAt?.toDate?.() || 0
-        return tb - ta
+      // Use onSnapshot for real-time updates instead of getDocs
+      const q = query(collection(db, 'orders'), where('phone', 'in', [
+        cleaned,                    // 03001234567
+        cleaned.slice(1),           // 3001234567
+        '92' + cleaned.slice(1),    // 923001234567
+        '+92' + cleaned.slice(1),   // +923001234567
+      ]))
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        orders.sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() || 0
+          const tb = b.createdAt?.toDate?.() || 0
+          return tb - ta
+        })
+        setMyOrders(orders)
+        setOrdersFetched(true)
+        setFetchingOrders(false)
+        if (orders.length === 0) {
+          setFetchError('No orders found for this phone number.')
+        } else {
+          setFetchError('')
+        }
+      }, (err) => {
+        console.error('Real-time listener error:', err)
+        setFetchError('Something went wrong. Please try again.')
+        setFetchingOrders(false)
       })
-      setMyOrders(orders)
-      setOrdersFetched(true)
-      if (orders.length === 0) setFetchError('No orders found for this phone number.')
+
+      setUnsubscribeListener(() => unsubscribe)
     } catch (err) {
       console.error(err)
       setFetchError('Something went wrong. Please try again.')
-    } finally {
       setFetchingOrders(false)
     }
   }
+
+  // Cleanup listener on component unmount
+  useEffect(() => {
+    return () => {
+      if (unsubscribeListener) {
+        unsubscribeListener()
+      }
+    }
+  }, [unsubscribeListener])
 
   const handleCancelOrder = async (orderId) => {
     setCancellingId(orderId)

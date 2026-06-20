@@ -13,7 +13,26 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 
-const categories = ['All', 'Mobiles', 'Fridges', 'ACs', 'Laptops', 'TVs', 'Accessories']
+const categories = ['All',
+  'Mobiles',
+  'Laptops',
+  'Tablets',
+  'Smart Watches',
+  'TVs & Monitors',
+  'ACs',
+  'Fridges & Freezers',
+  'Washing Machines',
+  'Microwaves & Ovens',
+  'Water Dispensers',
+  'Air Coolers',
+  'Cameras & Drones',
+  'Audio & Speakers',
+  'Gaming Consoles',
+  'Computer Accessories',
+  'Mobile Accessories',
+  'Home Appliances',
+  'Kitchen Appliances',
+  'Power Banks & Chargers']
 const badges = ['', 'HOT', 'NEW', 'SALE']
 const badgeColors = { HOT: '#CF0A0A', NEW: '#22c55e', SALE: '#DC5F00' }
 
