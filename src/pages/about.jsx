@@ -54,7 +54,7 @@ export default function About() {
           style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginBottom: '56px' }}>
           {[
             { value: '100%', label: 'اصل مصنوعات', icon: <Shield size={22} /> },
-            { value: '50K+', label: 'مطمئن صارفین', icon: <Headphones size={22} /> },
+            { value: '500+', label: 'مطمئن صارفین', icon: <Headphones size={22} /> },
             { value: '24/7', label: 'براہِ راست سپورٹ', icon: <Phone size={22} /> },
             { value: 'فوری', label: 'پورے پاکستان میں ترسیل', icon: <Truck size={22} /> },
           ].map((stat, i) => (
