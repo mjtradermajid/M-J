@@ -98,15 +98,14 @@ function Dashboard() {
   // ✅ PRODUCTS STATS
   const totalProducts = products.length
   const totalStock = products.reduce((a, p) => a + (p.stock || 0), 0)
-  const totalInventoryValue = products.reduce((a, p) => a + ((p.price || p.unitPrice || 0) * (p.stock || 0)), 0)
-  
-  // Calculate potential profit (assuming profit is stored or using a default margin)
+  const totalInventoryValue = products.reduce((a, p) => a + ((p.sellPrice || p.price || p.unitPrice || 0) * (p.stock || 0)), 0)
+
+  // Potential profit = actual stored profitAmount per unit (Buy Price se calculate hua, Products page jaisa hi) × stock.
+  // Pehle yeh galat tareeke se sellPrice ka profitPct% nikal raha tha, jo Products page ke "Total Profit" se mismatch karta tha.
   const totalPotentialProfit = products.reduce((a, p) => {
-    const price = p.price || p.unitPrice || 0
+    const profitPerUnit = p.profitAmount || 0
     const stock = p.stock || 0
-    // If product has profitPct field, use it; otherwise assume 20% margin
-    const profitMargin = (p.profitPct || p.profitPercentage || 20) / 100
-    return a + (price * stock * profitMargin)
+    return a + (profitPerUnit * stock)
   }, 0)
 
   const stats = [
@@ -142,7 +141,7 @@ function Dashboard() {
     products.forEach(p => {
       const cat = p.category || p.productCategory || 'Uncategorized'
       if (!cats[cat]) cats[cat] = 0
-      cats[cat] += (p.price || p.unitPrice || 0) * (p.stock || 0)
+      cats[cat] += (p.sellPrice || p.price || p.unitPrice || 0) * (p.stock || 0)
     })
     const colors = ['#CF0A0A', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#DC5F00', '#06b6d4', '#B8960C']
     return Object.entries(cats).map(([name, value], i) => ({

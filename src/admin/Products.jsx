@@ -33,8 +33,8 @@ const categories = ['All',
   'Home Appliances',
   'Kitchen Appliances',
   'Power Banks & Chargers']
-const badges = ['', 'HOT', 'NEW', 'SALE']
-const badgeColors = { HOT: '#CF0A0A', NEW: '#22c55e', SALE: '#DC5F00' }
+const badges = ['', 'PTA APPROVED', 'Non-PTA', 'CPID']
+const badgeColors = { PTA: '#22c55e', 'Non-PTA': '#CF0A0A', CPID: '#f59e0b' }
 
 function getCategoryIcon(cat) {
   const icons = { Mobiles: '📱', Fridges: '❄️', ACs: '🌀', Laptops: '💻', TVs: '📺', Accessories: '🔌' }
@@ -156,6 +156,10 @@ function ProductModal({ product, onClose, onSave, saving }) {
       }
     })
     setSpecs(newSpecs)
+    // Badge sirf Mobiles ke liye hai — category badalte hi reset kar do agar Mobiles nahi hai
+    if (form.category !== 'Mobiles') {
+      setForm(p => ({ ...p, badge: '' }))
+    }
   }, [form.category])
 
   const buyPrice = Number(form.buyPrice) || 0
@@ -569,18 +573,22 @@ function ProductModal({ product, onClose, onSave, saving }) {
           </div>
 
           {/* Stock + Badge */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: form.category === 'Mobiles' ? '1fr 1fr' : '1fr', gap: '12px' }}>
             <div>
               <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Stock</label>
               <input type="number" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: e.target.value }))}
                 placeholder="10" style={inputStyle()} />
             </div>
-            <div>
-              <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Badge</label>
-              <select value={form.badge} onChange={e => setForm(p => ({ ...p, badge: e.target.value }))} style={inputStyle()}>
-                {badges.map(b => <option key={b} value={b}>{b || 'None'}</option>)}
-              </select>
-            </div>
+            {form.category === 'Mobiles' && (
+              <div>
+                <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>
+                  PTA Status <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>— sirf Mobiles ke liye</span>
+                </label>
+                <select value={form.badge} onChange={e => setForm(p => ({ ...p, badge: e.target.value }))} style={inputStyle()}>
+                  {badges.map(b => <option key={b} value={b}>{b || 'None'}</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Description */}
