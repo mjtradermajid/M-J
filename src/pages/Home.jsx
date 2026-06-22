@@ -22,7 +22,7 @@ const carouselSlides = [
   { img: heroWatch,  label: 'Smart Watches', accent: '#B8960C' },
   { img: heroPods,   label: 'Audio & Pods',  accent: '#8b5cf6' },
   { img: heroPower,  label: 'Power Banks',   accent: '#22c55e' },
-  { img: heroPix,    label: 'Accessories',   accent: '#DC5F00' },
+  { img: heroPix,    label: 'Google Pixels',   accent: '#DC5F00' },
 ]
 
 const SLIDE_INTERVAL = 3500
