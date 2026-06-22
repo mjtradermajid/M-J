@@ -469,29 +469,47 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
           {/* Colors */}
           <div>
-            <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
-              Available Colors <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>(comma separated)</span>
-            </label>
-            <input 
-              value={Array.isArray(form.colors) ? form.colors.join(', ') : form.colors} 
-              onChange={e => setForm(p => ({ 
-                ...p, 
-                colors: e.target.value.split(',').map(c => c.trim()).filter(Boolean) 
-              }))}
-              placeholder="Space Black, Silver, Gold, Deep Purple" 
-              style={inputStyle()} 
-            />
-            {form.colors.length > 0 && (
-              <div style={{ display: 'flex', gap: '5px', marginTop: '8px', flexWrap: 'wrap' }}>
-                {form.colors.map((color, i) => (
-                  <span key={i} style={{ fontSize: '11px', color: '#EEEEEE88', backgroundColor: '#1a1a1a', padding: '3px 10px', borderRadius: '20px' }}>
-                    {color}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+  <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+    Available Colors <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>(comma separated)</span>
+  </label>
+  
+  <input 
+    value={typeof form.colors === 'string' ? form.colors : (Array.isArray(form.colors) ? form.colors.join(', ') : '')}
+    onChange={e => {
+      const inputValue = e.target.value;
+      setForm(p => ({
+        ...p,
+        colors: inputValue  // Store as string while typing (much smoother)
+      }));
+    }}
+    placeholder="e.g. Black, White, Red"
+    style={inputStyle()} 
+  />
 
+  {/* Live Preview Chips */}
+  {form.colors && (
+    <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
+      {(typeof form.colors === 'string' 
+        ? form.colors.split(',').map(c => c.trim()).filter(Boolean)
+        : Array.isArray(form.colors) ? form.colors : []
+      ).map((color, i) => (
+        <span 
+          key={i} 
+          style={{ 
+            fontSize: '11px', 
+            color: '#EEEEEE88', 
+            backgroundColor: '#1a1a1a', 
+            padding: '4px 12px', 
+            borderRadius: '20px',
+            border: '1px solid #333'
+          }}
+        >
+          {color}
+        </span>
+      ))}
+    </div>
+  )}
+</div>
           {/* Rating & Reviews */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
