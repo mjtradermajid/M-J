@@ -1,18 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import AdminLayout from './AdminLayout'
-import { Plus, ArrowLeft, CheckCircle, Circle, Printer, X, Loader2, Download, CalendarPlus, Pencil } from 'lucide-react'
+import { Plus, ArrowLeft, CheckCircle, Circle, Printer, X, Loader2, Download, CalendarPlus, Pencil, Search } from 'lucide-react'
 import { db } from '../firebase/config'
 import { collection, onSnapshot, query, orderBy, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 
 // ===== CALCULATIONS =====
-// buyPrice  = market se liya (aapka cost)
-// salePrice = customer ko diya (installment base price)
-// convenienceProfit = salePrice - buyPrice
-// installmentProfit = salePrice * profitPct / 100
-// totalAmount = salePrice + installmentProfit
-// totalProfit = convenienceProfit + installmentProfit
-
 function calcInstallment(salePrice, profitPct, downPayment, months) {
   const installmentProfit = salePrice * (profitPct / 100)
   const total = salePrice + installmentProfit
@@ -205,8 +198,6 @@ function buildInvoiceHTML(customer) {
         <div class="total-row"><span>⚠ Remaining Balance</span><span>Rs. ${Math.round(Math.max(remainingBalance, 0)).toLocaleString()}</span></div>
       </div>
 
-
-
       <div class="months-title">Monthly Payment Schedule</div>
       <div class="months-grid">
         ${(customer.payments || []).map((paid, idx) => {
@@ -394,7 +385,6 @@ function InvoiceModal({ customer, onClose }) {
             <div class="inv-total-row"><span>Amount Paid So Far</span><span>Rs. ${Math.round(paidAmount).toLocaleString()}</span></div>
             <div class="inv-total-row"><span>⚠ Remaining Balance</span><span>Rs. ${Math.round(Math.max(remainingBalance, 0)).toLocaleString()}</span></div>
           </div>
-
           <div class="inv-months-title">Monthly Payment Schedule</div>
           <div class="inv-months-grid">
             ${(customer.payments || []).map((isPaid, idx) => {
@@ -471,7 +461,6 @@ function InvoiceModal({ customer, onClose }) {
         </div>
 
         <div style={{ padding: '24px 28px' }}>
-          {/* Customer */}
           <div style={{ backgroundColor: '#111', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
             <p style={{ color: '#CF0A0A', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>CUSTOMER DETAILS</p>
             {[['Name', customer.name], ['Phone', customer.phone], ['CNIC', customer.cnic || '—'], ['Product', customer.product], ['Start Date', customer.startDate]].map(([l, v]) => (
@@ -482,7 +471,6 @@ function InvoiceModal({ customer, onClose }) {
             ))}
           </div>
 
-          {/* Guarantor */}
           {(customer.guarantorName || customer.guarantorPhone) && (
             <div style={{ backgroundColor: '#111', borderRadius: '12px', padding: '16px', marginBottom: '16px', border: '1px solid #DC5F0033' }}>
               <p style={{ color: '#DC5F00', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>GUARANTOR INFO</p>
@@ -495,7 +483,6 @@ function InvoiceModal({ customer, onClose }) {
             </div>
           )}
 
-          {/* Financial */}
           <div style={{ backgroundColor: '#111', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
             <p style={{ color: '#B8960C', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>FINANCIAL BREAKDOWN</p>
             {[
@@ -516,7 +503,6 @@ function InvoiceModal({ customer, onClose }) {
             ))}
           </div>
 
-          {/* Total Profit Box */}
           <div style={{ backgroundColor: '#22c55e11', border: '1px solid #22c55e33', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
             <p style={{ color: '#22c55e', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '8px' }}>💰 TOTAL PROFIT</p>
             {[
@@ -534,7 +520,6 @@ function InvoiceModal({ customer, onClose }) {
             </div>
           </div>
 
-          {/* Payment Status */}
           <div style={{ backgroundColor: '#111', borderRadius: '12px', padding: '16px', marginBottom: '16px' }}>
             <p style={{ color: '#22c55e', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>PAYMENT STATUS</p>
             {[
@@ -549,13 +534,11 @@ function InvoiceModal({ customer, onClose }) {
             ))}
           </div>
 
-          {/* TikTok */}
           <div style={{ backgroundColor: '#111', borderRadius: '10px', padding: '10px 14px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <TikTokIcon size={14} color="#EEEEEE88" />
             <span style={{ color: '#EEEEEE55', fontSize: '11px', fontWeight: 700 }}>@m_j_traders</span>
           </div>
 
-          {/* Buttons */}
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <motion.button whileHover={{ scale: 1.03 }} onClick={onClose}
               style={{ flex: 1, minWidth: '80px', backgroundColor: '#1a1a1a', color: '#EEEEEE', border: '1px solid #333', borderRadius: '10px', padding: '12px', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }}>
@@ -581,8 +564,8 @@ function AddCustomerModal({ onClose, onAdd }) {
   const [form, setForm] = useState({
     name: '', phone: '', cnic: '',
     product: '',
-    buyPrice: '',    // market se liya
-    salePrice: '',   // customer ko diya
+    buyPrice: '',
+    salePrice: '',
     profitPct: '', downPayment: '', months: '', startDate: '',
     guarantorName: '', guarantorPhone: '', guarantorCnic: '', guarantorAddress: '',
   })
@@ -598,7 +581,7 @@ function AddCustomerModal({ onClose, onAdd }) {
       name: form.name, phone: form.phone, cnic: form.cnic,
       product: form.product,
       buyPrice, salePrice,
-      productPrice: salePrice, // backward compat
+      productPrice: salePrice,
       profitPct: Number(form.profitPct),
       downPayment: Number(form.downPayment),
       months, startDate: form.startDate,
@@ -644,7 +627,6 @@ function AddCustomerModal({ onClose, onAdd }) {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Basic Info */}
           {[
             { key: 'name', label: 'Customer Name', placeholder: 'e.g. Ali Hassan', type: 'text' },
             { key: 'phone', label: 'Phone Number', placeholder: '03XX-XXXXXXX', type: 'text' },
@@ -658,7 +640,6 @@ function AddCustomerModal({ onClose, onAdd }) {
             </div>
           ))}
 
-          {/* Price Section */}
           <div style={{ border: '1px solid #B8960C33', borderRadius: '14px', padding: '16px', backgroundColor: '#0a0800' }}>
             <p style={{ color: '#B8960C', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ display: 'inline-block', width: '20px', height: '1px', backgroundColor: '#B8960C' }} />
@@ -687,7 +668,6 @@ function AddCustomerModal({ onClose, onAdd }) {
             </div>
           </div>
 
-          {/* Installment Details */}
           {[
             { key: 'profitPct', label: 'Installment Profit % (e.g. 30)', placeholder: '30', type: 'number' },
             { key: 'downPayment', label: 'Down Payment (Rs.)', placeholder: '20000', type: 'number' },
@@ -701,7 +681,6 @@ function AddCustomerModal({ onClose, onAdd }) {
             </div>
           ))}
 
-          {/* Guarantor Section */}
           <div style={{ border: '1px solid #DC5F0055', borderRadius: '14px', padding: '16px', marginTop: '4px', backgroundColor: '#0f0a00' }}>
             <p style={{ color: '#DC5F00', fontSize: '12px', fontWeight: 800, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ display: 'inline-block', width: '24px', height: '1px', backgroundColor: '#DC5F00' }} />
@@ -726,7 +705,6 @@ function AddCustomerModal({ onClose, onAdd }) {
           </div>
         </div>
 
-        {/* Live Calculation */}
         {salePrice > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             style={{ backgroundColor: '#111111', border: '1px solid #B8960C33', borderRadius: '12px', padding: '14px', marginTop: '16px' }}>
@@ -744,7 +722,6 @@ function AddCustomerModal({ onClose, onAdd }) {
                 </div>
               ))}
             </div>
-            {/* Total Profit highlight */}
             <div style={{ marginTop: '10px', backgroundColor: '#22c55e11', border: '1px solid #22c55e33', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ color: '#22c55e', fontSize: '13px', fontWeight: 700 }}>💰 Total Profit</span>
               <span style={{ color: '#22c55e', fontSize: '16px', fontWeight: 900 }}>Rs. {Math.round(totalProfit).toLocaleString()}</span>
@@ -823,7 +800,6 @@ function CustomerDetail({ customer, onBack, onPayment, onAddMonth }) {
         <ArrowLeft size={16} /> Back to Installments
       </motion.button>
 
-      {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
         {[
           { label: 'Total', value: `Rs. ${Math.round(total).toLocaleString()}`, color: '#B8960C' },
@@ -841,7 +817,6 @@ function CustomerDetail({ customer, onBack, onPayment, onAddMonth }) {
         ))}
       </div>
 
-      {/* Monthly Payments */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         style={{ backgroundColor: '#111111', border: '1px solid #22c55e22', borderRadius: '14px', padding: '14px', marginBottom: '12px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
@@ -894,7 +869,6 @@ function CustomerDetail({ customer, onBack, onPayment, onAddMonth }) {
         )}
       </motion.div>
 
-      {/* Customer + Guarantor side by side */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px', marginBottom: '12px' }}>
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           style={{ backgroundColor: '#111111', border: '1px solid #CF0A0A22', borderRadius: '14px', padding: '14px' }}>
@@ -945,9 +919,11 @@ function CustomerDetail({ customer, onBack, onPayment, onAddMonth }) {
 // ===== MAIN INSTALLMENTS =====
 function Installments() {
   const [customers, setCustomers] = useState([])
+  const [expenses, setExpenses] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     const q = query(collection(db, 'installments'), orderBy('createdAt', 'desc'))
@@ -961,6 +937,19 @@ function Installments() {
       setCustomers(data)
       setLoading(false)
     }, (error) => { console.error('Installments fetch error:', error); setLoading(false) })
+    return () => unsubscribe()
+  }, [])
+
+  // Fetch expenses from 'expenses' collection
+  useEffect(() => {
+    const expQuery = query(collection(db, 'expenses'), orderBy('createdAt', 'desc'))
+    const unsubscribe = onSnapshot(expQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => {
+        const d = doc.data()
+        return { id: doc.id, ...d, amount: Number(d.amount) || 0 }
+      })
+      setExpenses(data)
+    }, (error) => { console.error('Expenses fetch error:', error) })
     return () => unsubscribe()
   }, [])
 
@@ -1017,6 +1006,29 @@ function Installments() {
     return acc + totalProfit
   }, 0)
 
+  // NEW: Grand Total Investment (sum of all buyPrices)
+  const grandTotalInvestment = customers.reduce((acc, c) => {
+    return acc + (c.buyPrice || c.productPrice || 0)
+  }, 0)
+
+  // NEW: Total Expenses from expenses collection
+  const totalExpenses = expenses.reduce((acc, exp) => acc + (Number(exp.amount) || 0), 0)
+
+  // NEW: Net Profit = Total Profit - Total Expenses
+  const netProfit = totalProfit - totalExpenses
+
+  // NEW: Filtered customers based on search
+  const filteredCustomers = useMemo(() => {
+    if (!searchQuery.trim()) return customers
+    const q = searchQuery.toLowerCase()
+    return customers.filter(c =>
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.phone || '').toLowerCase().includes(q) ||
+      (c.product || '').toLowerCase().includes(q) ||
+      (c.cnic || '').toLowerCase().includes(q)
+    )
+  }, [customers, searchQuery])
+
   if (selectedCustomer) {
     return (
       <AdminLayout>
@@ -1043,6 +1055,27 @@ function Installments() {
         </motion.button>
       </motion.div>
 
+      {/* NEW: Search Bar */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+        style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#111111', border: '1px solid #333', borderRadius: '12px', padding: '10px 16px' }}>
+          <Search size={18} style={{ color: '#EEEEEE44', flexShrink: 0 }} />
+          <input
+            type="text"
+            placeholder="Search by name, phone, product or CNIC..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            style={{ flex: 1, backgroundColor: 'transparent', border: 'none', color: '#EEEEEE', fontSize: '14px', outline: 'none' }}
+          />
+          {searchQuery && (
+            <motion.button whileHover={{ scale: 1.1 }} onClick={() => setSearchQuery('')}
+              style={{ backgroundColor: 'transparent', border: 'none', color: '#EEEEEE44', cursor: 'pointer', padding: '2px' }}>
+              <X size={16} />
+            </motion.button>
+          )}
+        </div>
+      </motion.div>
+
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 20px', color: '#EEEEEE33' }}>
           <Loader2 size={40} style={{ margin: '0 auto 16px', display: 'block', animation: 'spin 1s linear infinite', color: '#CF0A0A' }} />
@@ -1057,6 +1090,12 @@ function Installments() {
               { label: 'Total Convenience Profit', value: Math.round(totalConvProfit), color: '#06b6d4', prefix: 'Rs. ' },
               { label: 'Total Installment Profit', value: Math.round(totalInstProfit), color: '#8b5cf6', prefix: 'Rs. ' },
               { label: 'Total Profit (All)', value: Math.round(totalProfit), color: '#22c55e', prefix: 'Rs. ' },
+              // NEW: Grand Total Investment card
+              { label: 'Grand Total Investment', value: Math.round(grandTotalInvestment), color: '#e11d48', prefix: 'Rs. ' },
+              // NEW: Total Expenses card
+              { label: 'Total Expenses', value: Math.round(totalExpenses), color: '#f97316', prefix: 'Rs. ' },
+              // NEW: Net Profit card
+              { label: 'Net Profit (After Exp)', value: Math.round(netProfit), color: '#ec4899', prefix: 'Rs. ' },
             ].map((card, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -4, boxShadow: `0 8px 25px ${card.color}33` }}
@@ -1069,7 +1108,7 @@ function Installments() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {customers.map((customer, i) => {
+            {filteredCustomers.map((customer, i) => {
               const { total, paidMonths, remainingBalance, suggestedMonthly, isCleared, totalProfit } = getDynamicMonthlyInfo(customer)
               const progress = customer.months > 0 ? (paidMonths / customer.months) * 100 : 0
               return (
@@ -1116,11 +1155,11 @@ function Installments() {
                 </motion.div>
               )
             })}
-            {customers.length === 0 && (
+            {filteredCustomers.length === 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 style={{ textAlign: 'center', padding: '60px 20px', color: '#EEEEEE33' }}>
-                <p style={{ fontSize: '16px', fontWeight: 600 }}>No installments found</p>
-                <p style={{ fontSize: '13px', marginTop: '4px' }}>Add your first installment customer</p>
+                <p style={{ fontSize: '16px', fontWeight: 600 }}>{searchQuery ? 'No matching customers found' : 'No installments found'}</p>
+                <p style={{ fontSize: '13px', marginTop: '4px' }}>{searchQuery ? 'Try a different search term' : 'Add your first installment customer'}</p>
               </motion.div>
             )}
           </div>
