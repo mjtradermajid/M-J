@@ -17,7 +17,7 @@ import heroPower from '../assets/power.jpg'
 import heroWatch from '../assets/watch.jpg'
 
 const carouselSlides = [
-  { img: heroPhones, label: 'Mobiles',      accent: '#CF0A0A' },
+  { img: heroPhones, label: ' IPhones',      accent: '#CF0A0A' },
   { img: heroPc,     label: 'Laptops & PCs',accent: '#3b82f6' },
   { img: heroWatch,  label: 'Smart Watches', accent: '#B8960C' },
   { img: heroPods,   label: 'Audio & Pods',  accent: '#8b5cf6' },
