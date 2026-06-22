@@ -453,7 +453,7 @@ function Home() {
               <motion.button whileHover={{ scale: 1.06, boxShadow: '0 0 25px #DC5F0066' }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/track-order')} style={{ border: '2px solid #DC5F00', color: '#DC5F00', padding: '12px 28px', borderRadius: '50px', fontWeight: 700, fontSize: '15px', backgroundColor: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>Track Order <ChevronRight size={17} /></motion.button>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3 }} style={{ display: 'flex', gap: '28px', flexWrap: 'wrap' }}>
-              {[{ icon: '🤝', value: 5000, suffix: '+', label: 'Happy Customers' }, { icon: '📦', value: 500, suffix: '+', label: 'Products' }, { icon: '⚡', value: 3, suffix: ' Days', label: 'Fast Delivery' }].map((stat, i) => (
+              {[{ icon: '🤝', value: 1000, suffix: '+', label: 'Happy Customers' }, { icon: '📦', value: 150, suffix: '+', label: 'Products' }, { icon: '⚡', value: 3, suffix: ' Days', label: 'Fast Delivery' }].map((stat, i) => (
                 <div key={i}>
                   <p style={{ color: '#CF0A0A', fontSize: '22px', fontWeight: 900 }}>{stat.icon} <AnimatedCounter target={stat.value} suffix={stat.suffix} /></p>
                   <p style={{ color: '#EEEEEE44', fontSize: '11px', marginTop: '2px' }}>{stat.label}</p>
