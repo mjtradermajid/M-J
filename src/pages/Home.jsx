@@ -227,14 +227,7 @@ function HeroCarousel() {
       </div>
 
       {/* Progress bar */}
-      <div style={{ position: 'absolute', bottom: '-14px', left: '20px', right: '20px', height: '2px', backgroundColor: '#EEEEEE11', borderRadius: '2px', zIndex: 5, overflow: 'hidden' }}>
-        <motion.div
-          key={current}
-          initial={{ width: '0%' }} animate={{ width: '100%' }}
-          transition={{ duration: SLIDE_INTERVAL / 1000, ease: 'linear' }}
-          style={{ height: '100%', backgroundColor: slide.accent, borderRadius: '2px' }}
-        />
-      </div>
+      
     </div>
   )
 }
