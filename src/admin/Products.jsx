@@ -41,8 +41,6 @@ function getCategoryIcon(cat) {
   return icons[cat] || '📦'
 }
 
-// ===== CATEGORY SPECIFICATIONS CONFIG =====
-// Admin ko ye fields dikhayi dengi har category ke liye
 const categorySpecs = {
   Mobiles: {
     fields: [
@@ -96,21 +94,16 @@ const categorySpecs = {
   }
 }
 
-// ─────────────────────────────────────────
-// ProductModal
-// ─────────────────────────────────────────
 function ProductModal({ product, onClose, onSave, saving }) {
   const [profitType, setProfitType] = useState(product?.profitType || 'amount')
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(product?.imageUrl || null)
-  
-  // Build initial specs from product data
+
   const getInitialSpecs = () => {
     const specs = {}
     const cat = product?.category || 'Mobiles'
     const fields = categorySpecs[cat]?.fields || []
     fields.forEach(f => {
-      // Array fields ko comma-separated string mein convert karein edit ke liye
       if (f.isArray && product?.[f.key]) {
         specs[f.key] = Array.isArray(product[f.key]) ? product[f.key].join(', ') : product[f.key]
       } else {
@@ -119,9 +112,9 @@ function ProductModal({ product, onClose, onSave, saving }) {
     })
     return specs
   }
-  
+
   const [specs, setSpecs] = useState(getInitialSpecs())
-  
+
   const [form, setForm] = useState({
     name: product?.name || '',
     category: product?.category || 'Mobiles',
@@ -139,12 +132,10 @@ function ProductModal({ product, onClose, onSave, saving }) {
     reviews: product?.reviews || 0,
   })
 
-  // Update specs when category changes
   useEffect(() => {
     const fields = categorySpecs[form.category]?.fields || []
     const newSpecs = {}
     fields.forEach(f => {
-      // Existing product se value lein agar same category hai
       if (product?.category === form.category && product?.[f.key]) {
         if (f.isArray && Array.isArray(product[f.key])) {
           newSpecs[f.key] = product[f.key].join(', ')
@@ -156,7 +147,6 @@ function ProductModal({ product, onClose, onSave, saving }) {
       }
     })
     setSpecs(newSpecs)
-    // Badge sirf Mobiles ke liye hai — category badalte hi reset kar do agar Mobiles nahi hai
     if (form.category !== 'Mobiles') {
       setForm(p => ({ ...p, badge: '' }))
     }
@@ -213,24 +203,16 @@ function ProductModal({ product, onClose, onSave, saving }) {
       }
     }
 
-    // Process specs - convert comma-separated to arrays where needed
     const cleanSpecs = {}
     const fields = categorySpecs[form.category]?.fields || []
-    
+
     fields.forEach(f => {
       const value = specs[f.key]
       if (!value || !value.trim()) return
-      
       if (f.isArray) {
-        // Comma-separated ko array mein convert karein
         cleanSpecs[f.key] = value.split(',').map(s => s.trim()).filter(Boolean)
-        // Pehli value ko default bhi rakhein (backward compatibility)
-        if (f.key === 'ramOptions') {
-          cleanSpecs.ram = cleanSpecs[f.key][0] || ''
-        }
-        if (f.key === 'storageOptions') {
-          cleanSpecs.storage = cleanSpecs[f.key][0] || ''
-        }
+        if (f.key === 'ramOptions') cleanSpecs.ram = cleanSpecs[f.key][0] || ''
+        if (f.key === 'storageOptions') cleanSpecs.storage = cleanSpecs[f.key][0] || ''
       } else {
         cleanSpecs[f.key] = value.trim()
       }
@@ -268,7 +250,6 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
   const currentSpecs = categorySpecs[form.category]?.fields || []
 
-  // Array field ke values ko preview tags mein dikhayein
   const getArrayPreview = (key) => {
     const value = specs[key]
     if (!value) return []
@@ -277,32 +258,18 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      style={{
-        position: 'fixed', inset: 0, backgroundColor: '#000000cc',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        zIndex: 100, padding: '20px',
-      }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      style={{ position: 'fixed', inset: 0, backgroundColor: '#000000cc', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '20px' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.85, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.85, opacity: 0 }}
+        initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
         onClick={e => e.stopPropagation()}
-        style={{
-          backgroundColor: '#0a0a0a', border: '1px solid #CF0A0A44',
-          borderRadius: '20px', padding: '28px', width: '100%',
-          maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto',
-        }}
+        style={{ backgroundColor: '#0a0a0a', border: '1px solid #CF0A0A44', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}
       >
-        {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontWeight: 900, fontSize: '20px' }}>
-            {product?.firestoreId ? 'Edit' : 'Add'}{' '}
-            <span style={{ color: '#CF0A0A' }}>Product</span>
+            {product?.firestoreId ? 'Edit' : 'Add'}{' '}<span style={{ color: '#CF0A0A' }}>Product</span>
           </h2>
           <motion.button whileHover={{ scale: 1.1 }} onClick={onClose}
             style={{ backgroundColor: '#CF0A0A22', border: 'none', color: '#CF0A0A', borderRadius: '8px', padding: '6px', cursor: 'pointer' }}>
@@ -315,11 +282,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
           <p style={{ color: '#EEEEEE33', fontSize: '10px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>LIVE PREVIEW</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{ width: '52px', height: '52px', backgroundColor: '#1a1a1a', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
-              {imagePreview ? (
-                <img src={imagePreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                getCategoryIcon(form.category)
-              )}
+              {imagePreview ? <img src={imagePreview} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getCategoryIcon(form.category)}
             </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontWeight: 800, fontSize: '14px', marginBottom: '6px' }}>{form.name || 'Product Name'}</p>
@@ -334,9 +297,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
                   <span style={{ color: '#CF0A0A', fontWeight: 900, fontSize: '15px' }}>Rs. {sellPrice.toLocaleString()}</span>
                 )}
                 {form.badge && (
-                  <span style={{ backgroundColor: badgeColors[form.badge] + '33', color: badgeColors[form.badge], fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px' }}>
-                    {form.badge}
-                  </span>
+                  <span style={{ backgroundColor: badgeColors[form.badge] + '33', color: badgeColors[form.badge], fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '20px' }}>{form.badge}</span>
                 )}
               </div>
             </div>
@@ -345,10 +306,8 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
         {/* Profit Summary */}
         {buyPrice > 0 && profitAmount > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            style={{ backgroundColor: '#22c55e11', border: '1px solid #22c55e33', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}
-          >
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            style={{ backgroundColor: '#22c55e11', border: '1px solid #22c55e33', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
             <p style={{ color: '#22c55e', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '10px' }}>💰 PROFIT CALCULATION</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {[
@@ -366,39 +325,23 @@ function ProductModal({ product, onClose, onSave, saving }) {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-
           {/* Image Upload */}
           <div>
-            <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
-              Product Image
-            </label>
-
+            <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>Product Image</label>
             {imagePreview && (
               <div style={{ marginBottom: '10px', position: 'relative', width: '100px', height: '100px' }}>
-                <img src={imagePreview} alt="preview"
-                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '12px', border: '2px solid #CF0A0A44' }} />
+                <img src={imagePreview} alt="preview" style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '12px', border: '2px solid #CF0A0A44' }} />
                 <button onClick={() => { setImageFile(null); setImagePreview(null) }}
-                  style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#CF0A0A', border: 'none', borderRadius: '50%', width: '22px', height: '22px', color: 'white', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  ✕
-                </button>
+                  style={{ position: 'absolute', top: '-8px', right: '-8px', backgroundColor: '#CF0A0A', border: 'none', borderRadius: '50%', width: '22px', height: '22px', color: 'white', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
               </div>
             )}
-
-            <label style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
-              backgroundColor: '#111', border: '2px dashed #333',
-              borderRadius: '12px', padding: '16px', cursor: 'pointer',
-              transition: 'border-color 0.2s'
-            }}
+            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#111', border: '2px dashed #333', borderRadius: '12px', padding: '16px', cursor: 'pointer' }}
               onMouseOver={e => e.currentTarget.style.borderColor = '#CF0A0A'}
-              onMouseOut={e => e.currentTarget.style.borderColor = '#333'}
-            >
+              onMouseOut={e => e.currentTarget.style.borderColor = '#333'}>
               <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
               <span style={{ fontSize: '28px' }}>📸</span>
               <div>
-                <p style={{ fontWeight: 600, fontSize: '13px', color: '#EEEEEE' }}>
-                  {imageFile ? imageFile.name : imagePreview ? 'Change image' : 'Click to upload product image'}
-                </p>
+                <p style={{ fontWeight: 600, fontSize: '13px', color: '#EEEEEE' }}>{imageFile ? imageFile.name : imagePreview ? 'Change image' : 'Click to upload product image'}</p>
                 <p style={{ color: '#EEEEEE33', fontSize: '11px', marginTop: '2px' }}>PNG, JPG — max 5MB</p>
               </div>
             </label>
@@ -407,8 +350,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
           {/* Name */}
           <div>
             <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Product Name *</label>
-            <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-              placeholder="e.g. iPhone 14 Pro Max" style={inputStyle()} />
+            <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. iPhone 14 Pro Max" style={inputStyle()} />
           </div>
 
           {/* Category */}
@@ -419,16 +361,11 @@ function ProductModal({ product, onClose, onSave, saving }) {
             </select>
           </div>
 
-          {/* ===== DYNAMIC CATEGORY SPECIFICATIONS ===== */}
+          {/* Dynamic Category Specs */}
           {currentSpecs.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              style={{ backgroundColor: '#111', border: '1px solid #CF0A0A33', borderRadius: '14px', padding: '16px', marginTop: '4px' }}
-            >
-              <p style={{ color: '#CF0A0A', fontSize: '11px', fontWeight: 800, letterSpacing: '2px', marginBottom: '12px', textTransform: 'uppercase' }}>
-                ⚙️ {form.category} Specifications
-              </p>
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+              style={{ backgroundColor: '#111', border: '1px solid #CF0A0A33', borderRadius: '14px', padding: '16px', marginTop: '4px' }}>
+              <p style={{ color: '#CF0A0A', fontSize: '11px', fontWeight: 800, letterSpacing: '2px', marginBottom: '12px', textTransform: 'uppercase' }}>⚙️ {form.category} Specifications</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {currentSpecs.map((field) => (
                   <div key={field.key}>
@@ -436,26 +373,12 @@ function ProductModal({ product, onClose, onSave, saving }) {
                       {field.label}
                       {field.isArray && <span style={{ color: '#CF0A0A', marginLeft: '4px' }}>● Multiple</span>}
                     </label>
-                    <input
-                      type={field.type}
-                      value={specs[field.key] || ''}
-                      onChange={e => setSpecs(prev => ({ ...prev, [field.key]: e.target.value }))}
-                      placeholder={field.placeholder}
-                      style={inputStyle(field.isArray ? '#CF0A0A55' : '#333')}
-                    />
-                    {/* Array field preview tags */}
+                    <input type={field.type} value={specs[field.key] || ''} onChange={e => setSpecs(prev => ({ ...prev, [field.key]: e.target.value }))}
+                      placeholder={field.placeholder} style={inputStyle(field.isArray ? '#CF0A0A55' : '#333')} />
                     {field.isArray && getArrayPreview(field.key).length > 0 && (
                       <div style={{ display: 'flex', gap: '5px', marginTop: '8px', flexWrap: 'wrap' }}>
                         {getArrayPreview(field.key).map((val, i) => (
-                          <span key={i} style={{ 
-                            fontSize: '11px', 
-                            color: '#EEEEEE', 
-                            backgroundColor: field.key.includes('ram') ? '#CF0A0A33' : '#3b82f633', 
-                            border: `1px solid ${field.key.includes('ram') ? '#CF0A0A55' : '#3b82f655'}`,
-                            padding: '4px 10px', 
-                            borderRadius: '20px',
-                            fontWeight: 600
-                          }}>
+                          <span key={i} style={{ fontSize: '11px', color: '#EEEEEE', backgroundColor: field.key.includes('ram') ? '#CF0A0A33' : '#3b82f633', border: `1px solid ${field.key.includes('ram') ? '#CF0A0A55' : '#3b82f655'}`, padding: '4px 10px', borderRadius: '20px', fontWeight: 600 }}>
                             {field.key.includes('ram') ? '💾' : '💿'} {val}{field.key.includes('ram') ? 'GB' : ''}
                           </span>
                         ))}
@@ -469,60 +392,33 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
           {/* Colors */}
           <div>
-  <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
-    Available Colors <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>(comma separated)</span>
-  </label>
-  
-  <input 
-    value={typeof form.colors === 'string' ? form.colors : (Array.isArray(form.colors) ? form.colors.join(', ') : '')}
-    onChange={e => {
-      const inputValue = e.target.value;
-      setForm(p => ({
-        ...p,
-        colors: inputValue  // Store as string while typing (much smoother)
-      }));
-    }}
-    placeholder="e.g. Black, White, Red"
-    style={inputStyle()} 
-  />
+            <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+              Available Colors <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>(comma separated)</span>
+            </label>
+            <input
+              value={typeof form.colors === 'string' ? form.colors : (Array.isArray(form.colors) ? form.colors.join(', ') : '')}
+              onChange={e => setForm(p => ({ ...p, colors: e.target.value }))}
+              placeholder="e.g. Black, White, Red"
+              style={inputStyle()}
+            />
+            {form.colors && (
+              <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
+                {(typeof form.colors === 'string' ? form.colors.split(',').map(c => c.trim()).filter(Boolean) : Array.isArray(form.colors) ? form.colors : []).map((color, i) => (
+                  <span key={i} style={{ fontSize: '11px', color: '#EEEEEE88', backgroundColor: '#1a1a1a', padding: '4px 12px', borderRadius: '20px', border: '1px solid #333' }}>{color}</span>
+                ))}
+              </div>
+            )}
+          </div>
 
-  {/* Live Preview Chips */}
-  {form.colors && (
-    <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
-      {(typeof form.colors === 'string' 
-        ? form.colors.split(',').map(c => c.trim()).filter(Boolean)
-        : Array.isArray(form.colors) ? form.colors : []
-      ).map((color, i) => (
-        <span 
-          key={i} 
-          style={{ 
-            fontSize: '11px', 
-            color: '#EEEEEE88', 
-            backgroundColor: '#1a1a1a', 
-            padding: '4px 12px', 
-            borderRadius: '20px',
-            border: '1px solid #333'
-          }}
-        >
-          {color}
-        </span>
-      ))}
-    </div>
-  )}
-</div>
           {/* Rating & Reviews */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
               <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Rating (1-5)</label>
-              <input type="number" min="1" max="5" value={form.rating} 
-                onChange={e => setForm(p => ({ ...p, rating: Number(e.target.value) }))}
-                style={inputStyle()} />
+              <input type="number" min="1" max="5" value={form.rating} onChange={e => setForm(p => ({ ...p, rating: Number(e.target.value) }))} style={inputStyle()} />
             </div>
             <div>
               <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Reviews Count</label>
-              <input type="number" value={form.reviews} 
-                onChange={e => setForm(p => ({ ...p, reviews: Number(e.target.value) }))}
-                style={inputStyle()} />
+              <input type="number" value={form.reviews} onChange={e => setForm(p => ({ ...p, reviews: Number(e.target.value) }))} style={inputStyle()} />
             </div>
           </div>
 
@@ -531,8 +427,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
             <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>
               Buy Price / Cost (Rs.) * <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>— kitne mein liya</span>
             </label>
-            <input type="number" value={form.buyPrice} onChange={e => setForm(p => ({ ...p, buyPrice: e.target.value }))}
-              placeholder="e.g. 135000" style={inputStyle('#3b82f655')} />
+            <input type="number" value={form.buyPrice} onChange={e => setForm(p => ({ ...p, buyPrice: e.target.value }))} placeholder="e.g. 135000" style={inputStyle('#3b82f655')} />
           </div>
 
           {/* Profit */}
@@ -547,16 +442,12 @@ function ProductModal({ product, onClose, onSave, saving }) {
               ))}
             </div>
             {profitType === 'amount' ? (
-              <input type="number" value={form.profitAmount} onChange={e => setForm(p => ({ ...p, profitAmount: e.target.value }))}
-                placeholder="e.g. 5000" style={inputStyle('#22c55e55')} />
+              <input type="number" value={form.profitAmount} onChange={e => setForm(p => ({ ...p, profitAmount: e.target.value }))} placeholder="e.g. 5000" style={inputStyle('#22c55e55')} />
             ) : (
-              <input type="number" value={form.profitPct} min="0" max="100" onChange={e => setForm(p => ({ ...p, profitPct: e.target.value }))}
-                placeholder="e.g. 10" style={inputStyle('#22c55e55')} />
+              <input type="number" value={form.profitPct} min="0" max="100" onChange={e => setForm(p => ({ ...p, profitPct: e.target.value }))} placeholder="e.g. 10" style={inputStyle('#22c55e55')} />
             )}
             {buyPrice > 0 && profitAmount > 0 && (
-              <p style={{ color: '#22c55e', fontSize: '11px', marginTop: '6px' }}>
-                ✓ Sell Price auto set: <strong>Rs. {sellPrice.toLocaleString()}</strong>
-              </p>
+              <p style={{ color: '#22c55e', fontSize: '11px', marginTop: '6px' }}>✓ Sell Price auto set: <strong>Rs. {sellPrice.toLocaleString()}</strong></p>
             )}
           </div>
 
@@ -565,8 +456,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
             <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>
               Old Price (Rs.) <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>— optional</span>
             </label>
-            <input type="number" value={form.oldPrice} onChange={e => setForm(p => ({ ...p, oldPrice: e.target.value }))}
-              placeholder="e.g. 160000" style={inputStyle()} />
+            <input type="number" value={form.oldPrice} onChange={e => setForm(p => ({ ...p, oldPrice: e.target.value }))} placeholder="e.g. 160000" style={inputStyle()} />
           </div>
 
           {/* Discount */}
@@ -575,8 +465,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
               Discount % <span style={{ color: '#DC5F00', fontWeight: 400 }}>(0 = no discount)</span>
             </label>
             <div style={{ position: 'relative' }}>
-              <input type="number" min="0" max="100" value={form.discount} onChange={e => setForm(p => ({ ...p, discount: e.target.value }))}
-                placeholder="e.g. 10" style={inputStyle(form.discount > 0 ? '#DC5F0066' : '#333')} />
+              <input type="number" min="0" max="100" value={form.discount} onChange={e => setForm(p => ({ ...p, discount: e.target.value }))} placeholder="e.g. 10" style={inputStyle(form.discount > 0 ? '#DC5F0066' : '#333')} />
               {form.discount > 0 && (
                 <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '10px' }}>
                   Save Rs. {(sellPrice - discountedPrice).toLocaleString()}
@@ -584,9 +473,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
               )}
             </div>
             {form.discount > 0 && (
-              <p style={{ color: '#22c55e', fontSize: '11px', marginTop: '5px' }}>
-                ✓ Final price after discount: Rs. {discountedPrice.toLocaleString()}
-              </p>
+              <p style={{ color: '#22c55e', fontSize: '11px', marginTop: '5px' }}>✓ Final price after discount: Rs. {discountedPrice.toLocaleString()}</p>
             )}
           </div>
 
@@ -594,8 +481,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
           <div style={{ display: 'grid', gridTemplateColumns: form.category === 'Mobiles' ? '1fr 1fr' : '1fr', gap: '12px' }}>
             <div>
               <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Stock</label>
-              <input type="number" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: e.target.value }))}
-                placeholder="10" style={inputStyle()} />
+              <input type="number" value={form.stock} onChange={e => setForm(p => ({ ...p, stock: e.target.value }))} placeholder="10" style={inputStyle()} />
             </div>
             {form.category === 'Mobiles' && (
               <div>
@@ -612,9 +498,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
           {/* Description */}
           <div>
             <label style={{ color: '#EEEEEE66', fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '5px' }}>Description</label>
-            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-              placeholder="Product description..." rows={3}
-              style={{ ...inputStyle(), resize: 'vertical' }} />
+            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Product description..." rows={3} style={{ ...inputStyle(), resize: 'vertical' }} />
           </div>
 
           {/* Status */}
@@ -627,62 +511,37 @@ function ProductModal({ product, onClose, onSave, saving }) {
           </div>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02, boxShadow: '0 0 20px #CF0A0A55' }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleSave}
-          disabled={saving}
-          style={{ width: '100%', marginTop: '20px', backgroundColor: saving ? '#7a0606' : '#CF0A0A', color: 'white', border: 'none', borderRadius: '12px', padding: '13px', fontWeight: 700, fontSize: '15px', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-        >
-          {saving ? (
-            <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Saving...</>
-          ) : (
-            product?.firestoreId ? '✓ Save Changes' : '+ Add Product'
-          )}
+        <motion.button whileHover={{ scale: 1.02, boxShadow: '0 0 20px #CF0A0A55' }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={saving}
+          style={{ width: '100%', marginTop: '20px', backgroundColor: saving ? '#7a0606' : '#CF0A0A', color: 'white', border: 'none', borderRadius: '12px', padding: '13px', fontWeight: 700, fontSize: '15px', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          {saving ? <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Saving...</> : product?.firestoreId ? '✓ Save Changes' : '+ Add Product'}
         </motion.button>
       </motion.div>
     </motion.div>
   )
 }
 
-// ─────────────────────────────────────────
-// DeleteModal
-// ─────────────────────────────────────────
 function DeleteModal({ product, onClose, onDelete }) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       style={{ position: 'fixed', inset: 0, backgroundColor: '#000000cc', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '20px' }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
+      onClick={onClose}>
+      <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }}
         onClick={e => e.stopPropagation()}
-        style={{ backgroundColor: '#0a0a0a', border: '1px solid #CF0A0A44', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '360px', textAlign: 'center' }}
-      >
+        style={{ backgroundColor: '#0a0a0a', border: '1px solid #CF0A0A44', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '360px', textAlign: 'center' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗑️</div>
         <h3 style={{ fontWeight: 900, fontSize: '18px', marginBottom: '8px' }}>Delete Product?</h3>
-        <p style={{ color: '#EEEEEE55', fontSize: '13px', marginBottom: '24px' }}>
-          Delete <span style={{ color: '#CF0A0A', fontWeight: 700 }}>{product?.name}</span>? This cannot be undone.
-        </p>
+        <p style={{ color: '#EEEEEE55', fontSize: '13px', marginBottom: '24px' }}>Delete <span style={{ color: '#CF0A0A', fontWeight: 700 }}>{product?.name}</span>? This cannot be undone.</p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <motion.button whileHover={{ scale: 1.03 }} onClick={onClose}
-            style={{ flex: 1, backgroundColor: '#1a1a1a', color: '#EEEEEE', border: '1px solid #333', borderRadius: '10px', padding: '12px', fontWeight: 700, cursor: 'pointer' }}>
-            Cancel
-          </motion.button>
+            style={{ flex: 1, backgroundColor: '#1a1a1a', color: '#EEEEEE', border: '1px solid #333', borderRadius: '10px', padding: '12px', fontWeight: 700, cursor: 'pointer' }}>Cancel</motion.button>
           <motion.button whileHover={{ scale: 1.03 }} onClick={() => { onDelete(product.firestoreId); onClose() }}
-            style={{ flex: 1, backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 700, cursor: 'pointer' }}>
-            Delete
-          </motion.button>
+            style={{ flex: 1, backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '10px', padding: '12px', fontWeight: 700, cursor: 'pointer' }}>Delete</motion.button>
         </div>
       </motion.div>
     </motion.div>
   )
 }
 
-// ─────────────────────────────────────────
-// Main Component
-// ─────────────────────────────────────────
 function AdminProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -740,8 +599,9 @@ function AdminProducts() {
     }
   }
 
-  const totalProfit = products.reduce((acc, p) => acc + (p.profitAmount || 0), 0)
-  const totalCost = products.reduce((acc, p) => acc + (p.buyPrice || 0), 0)
+  // ✅ FIXED: Stock se multiply karo — sahi calculation
+  const totalProfit = products.reduce((acc, p) => acc + ((p.profitAmount || 0) * (p.stock || 0)), 0)
+  const totalCost   = products.reduce((acc, p) => acc + ((p.buyPrice || 0) * (p.stock || 0)), 0)
 
   return (
     <AdminLayout>
@@ -749,54 +609,42 @@ function AdminProducts() {
 
       <AnimatePresence>
         {showModal && (
-          <ProductModal
-            product={editProduct}
-            onClose={() => { setShowModal(false); setEditProduct(null) }}
-            onSave={handleSave}
-            saving={saving}
-          />
+          <ProductModal product={editProduct} onClose={() => { setShowModal(false); setEditProduct(null) }} onSave={handleSave} saving={saving} />
         )}
         {deleteTarget && (
-          <DeleteModal
-            product={deleteTarget}
-            onClose={() => setDeleteTarget(null)}
-            onDelete={handleDelete}
-          />
+          <DeleteModal product={deleteTarget} onClose={() => setDeleteTarget(null)} onDelete={handleDelete} />
         )}
       </AnimatePresence>
 
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: 'clamp(20px, 4vw, 26px)', fontWeight: 900, marginBottom: '2px' }}>
             Manage <span style={{ color: '#CF0A0A' }}>Products</span>
           </h1>
           <p style={{ color: '#EEEEEE44', fontSize: '12px' }}>{products.length} products total</p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05, boxShadow: '0 0 20px #CF0A0A55' }} whileTap={{ scale: 0.95 }}
+        <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 20px #CF0A0A55' }} whileTap={{ scale: 0.95 }}
           onClick={() => { setEditProduct(null); setShowModal(true) }}
-          style={{ backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '12px', padding: '11px 22px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
+          style={{ backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '12px', padding: '11px 22px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Plus size={17} /> List Product
         </motion.button>
       </motion.div>
 
-      {/* Stats */}
+      {/* ✅ FIXED STATS — stock × price/profit */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '20px' }}>
         {[
-          { label: 'Total Products', value: products.length, color: '#CF0A0A' },
-          { label: 'Total Stock', value: products.reduce((a, p) => a + (p.stock || 0), 0), color: '#22c55e' },
-          { label: 'Low Stock', value: products.filter(p => p.stock <= 5).length, color: '#f59e0b' },
-          { label: 'On Discount', value: products.filter(p => p.discount > 0).length, color: '#DC5F00' },
-          { label: 'Total Cost', value: `Rs.${(totalCost / 1000).toFixed(0)}k`, color: '#3b82f6' },
-          { label: 'Total Profit', value: `Rs.${(totalProfit / 1000).toFixed(0)}k`, color: '#22c55e' },
+          { label: 'Total Products', value: products.length,                                                                          color: '#CF0A0A', isNum: true  },
+          { label: 'Total Stock',    value: products.reduce((a, p) => a + (p.stock || 0), 0),                                         color: '#22c55e', isNum: true  },
+          { label: 'Low Stock',      value: products.filter(p => (p.stock || 0) <= 5).length,                                         color: '#f59e0b', isNum: true  },
+          { label: 'On Discount',    value: products.filter(p => p.discount > 0).length,                                              color: '#DC5F00', isNum: true  },
+          // ✅ FIXED: buyPrice × stock
+          { label: 'Total Cost',     value: `Rs.${totalCost >= 1_000_000 ? (totalCost / 1_000_000).toFixed(1) + 'M' : (totalCost / 1000).toFixed(0) + 'k'}`,   color: '#3b82f6', isNum: false },
+          // ✅ FIXED: profitAmount × stock
+          { label: 'Total Profit',   value: `Rs.${totalProfit >= 1_000_000 ? (totalProfit / 1_000_000).toFixed(1) + 'M' : (totalProfit / 1000).toFixed(0) + 'k'}`, color: '#22c55e', isNum: false },
         ].map((s, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
+          <motion.div key={i} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             style={{ backgroundColor: '#111', border: `1px solid ${s.color}22`, borderRadius: '12px', padding: '13px' }}>
             <p style={{ color: '#EEEEEE33', fontSize: '11px', marginBottom: '4px' }}>{s.label}</p>
             <p style={{ color: s.color, fontWeight: 900, fontSize: '18px' }}>{s.value}</p>
@@ -824,120 +672,68 @@ function AdminProducts() {
       {/* Category Filter */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {categories.map(cat => (
-          <motion.button key={cat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveCategory(cat)}
+          <motion.button key={cat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setActiveCategory(cat)}
             style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: 600, backgroundColor: activeCategory === cat ? '#CF0A0A' : '#111', color: activeCategory === cat ? 'white' : '#EEEEEE55', border: activeCategory === cat ? '1px solid #CF0A0A' : '1px solid #333', transition: 'all 0.2s' }}>
             {cat} {cat !== 'All' && `(${products.filter(p => p.category === cat).length})`}
           </motion.button>
         ))}
       </div>
 
-      {/* Loading State */}
+      {/* Loading */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '80px 20px', color: '#EEEEEE33' }}>
           <Loader2 size={40} style={{ margin: '0 auto 16px', display: 'block', animation: 'spin 1s linear infinite', color: '#CF0A0A' }} />
           <p style={{ fontSize: '14px' }}>Loading products from Firebase...</p>
         </div>
       ) : viewMode === 'grid' ? (
-        // ─── Grid View ───
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
           {filtered.map((product, i) => {
             const finalPrice = product.discount > 0
               ? Math.round((product.sellPrice || product.price) * (1 - product.discount / 100))
               : (product.sellPrice || product.price)
-
             return (
               <motion.div key={product.firestoreId}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: i * 0.06, type: 'spring', stiffness: 180 }}
                 whileHover={{ y: -4, boxShadow: '0 8px 25px #CF0A0A15' }}
-                style={{ backgroundColor: '#111', border: '1px solid #222', borderRadius: '14px', overflow: 'hidden', position: 'relative' }}
-              >
+                style={{ backgroundColor: '#111', border: '1px solid #222', borderRadius: '14px', overflow: 'hidden', position: 'relative' }}>
                 {product.badge && (
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, backgroundColor: badgeColors[product.badge], color: 'white', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px' }}>
-                    {product.badge}
-                  </div>
+                  <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, backgroundColor: badgeColors[product.badge], color: 'white', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px' }}>{product.badge}</div>
                 )}
                 {product.discount > 0 && (
-                  <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 2, backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', border: '1px solid #DC5F0044' }}>
-                    -{product.discount}% OFF
-                  </div>
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 2, backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', border: '1px solid #DC5F0044' }}>-{product.discount}% OFF</div>
                 )}
                 {product.stock <= 5 && product.discount === 0 && (
-                  <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 2, backgroundColor: '#f59e0b22', color: '#f59e0b', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', border: '1px solid #f59e0b44' }}>
-                    Low Stock
-                  </div>
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 2, backgroundColor: '#f59e0b22', color: '#f59e0b', fontSize: '9px', fontWeight: 800, padding: '3px 8px', borderRadius: '20px', border: '1px solid #f59e0b44' }}>Low Stock</div>
                 )}
-
                 <div style={{ height: '110px', backgroundColor: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <span style={{ fontSize: '48px' }}>{product.img}</span>
-                  )}
+                  {product.imageUrl ? <img src={product.imageUrl} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: '48px' }}>{product.img}</span>}
                 </div>
-
                 <div style={{ padding: '14px' }}>
                   <p style={{ color: '#EEEEEE44', fontSize: '10px', marginBottom: '3px' }}>{product.category}</p>
                   <p style={{ fontWeight: 700, fontSize: '13px', marginBottom: '6px', lineHeight: 1.3 }}>{product.name}</p>
-
-                  {/* Show specs preview in grid */}
-                  {product.ramOptions && product.ramOptions.length > 0 && (
-                    <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>
-                      💾 {product.ramOptions.join(', ')}GB RAM
-                    </p>
-                  )}
-                  {product.storageOptions && product.storageOptions.length > 0 && (
-                    <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>
-                      💿 {product.storageOptions.join(', ')}GB Storage
-                    </p>
-                  )}
-                  {product.ram && !product.ramOptions && (
-                    <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>
-                      📱 {product.ram}GB RAM · {product.storage || 'N/A'} Storage
-                    </p>
-                  )}
-                  {product.screenSize && (
-                    <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>
-                      📺 {product.screenSize} · {product.resolution || 'N/A'}
-                    </p>
-                  )}
-                  {product.capacity && (
-                    <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>
-                      ❄️ {product.capacity}L · {product.fridgeType || 'N/A'}
-                    </p>
-                  )}
-
+                  {product.ramOptions && product.ramOptions.length > 0 && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>💾 {product.ramOptions.join(', ')}GB RAM</p>}
+                  {product.storageOptions && product.storageOptions.length > 0 && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>💿 {product.storageOptions.join(', ')}GB Storage</p>}
+                  {product.ram && !product.ramOptions && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>📱 {product.ram}GB RAM · {product.storage || 'N/A'} Storage</p>}
+                  {product.screenSize && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>📺 {product.screenSize} · {product.resolution || 'N/A'}</p>}
+                  {product.capacity && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>❄️ {product.capacity}L · {product.fridgeType || 'N/A'}</p>}
                   {product.profitAmount > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <TrendingUp size={11} style={{ color: '#22c55e' }} />
-                      <span style={{ color: '#22c55e', fontSize: '10px', fontWeight: 600 }}>
-                        Profit: Rs. {(product.profitAmount || 0).toLocaleString()} ({product.profitPct || 0}%)
-                      </span>
+                      <span style={{ color: '#22c55e', fontSize: '10px', fontWeight: 600 }}>Profit: Rs. {(product.profitAmount || 0).toLocaleString()} ({product.profitPct || 0}%)</span>
                     </div>
                   )}
-
                   <div style={{ marginBottom: '10px' }}>
                     {product.discount > 0 ? (
                       <div>
-                        <span style={{ color: '#EEEEEE33', fontSize: '11px', textDecoration: 'line-through' }}>
-                          Rs. {(product.sellPrice || product.price || 0).toLocaleString()}
-                        </span>
-                        <span style={{ color: '#CF0A0A', fontWeight: 900, fontSize: '15px', marginLeft: '6px' }}>
-                          Rs. {finalPrice.toLocaleString()}
-                        </span>
+                        <span style={{ color: '#EEEEEE33', fontSize: '11px', textDecoration: 'line-through' }}>Rs. {(product.sellPrice || product.price || 0).toLocaleString()}</span>
+                        <span style={{ color: '#CF0A0A', fontWeight: 900, fontSize: '15px', marginLeft: '6px' }}>Rs. {finalPrice.toLocaleString()}</span>
                       </div>
                     ) : (
-                      <p style={{ color: '#CF0A0A', fontWeight: 900, fontSize: '15px' }}>
-                        Rs. {(product.sellPrice || product.price || 0).toLocaleString()}
-                      </p>
+                      <p style={{ color: '#CF0A0A', fontWeight: 900, fontSize: '15px' }}>Rs. {(product.sellPrice || product.price || 0).toLocaleString()}</p>
                     )}
-                    <span style={{ color: product.stock <= 5 ? '#f59e0b' : '#22c55e', fontSize: '11px', fontWeight: 600 }}>
-                      Stock: {product.stock}
-                    </span>
+                    <span style={{ color: product.stock <= 5 ? '#f59e0b' : '#22c55e', fontSize: '11px', fontWeight: 600 }}>Stock: {product.stock}</span>
                   </div>
-
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                       onClick={() => { setEditProduct(product); setShowModal(true) }}
@@ -956,7 +752,6 @@ function AdminProducts() {
           })}
         </div>
       ) : (
-        // ─── List View ───
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr auto', gap: '10px', padding: '10px 16px', backgroundColor: '#111', borderRadius: '10px', fontSize: '11px', color: '#EEEEEE44', fontWeight: 700 }}>
             <span>PRODUCT</span><span>CATEGORY</span><span>BUY PRICE</span><span>SELL PRICE</span><span>PROFIT</span><span>STOCK</span><span>ACTIONS</span>
@@ -965,35 +760,21 @@ function AdminProducts() {
             const finalPrice = product.discount > 0
               ? Math.round((product.sellPrice || product.price) * (1 - product.discount / 100))
               : (product.sellPrice || product.price)
-
             return (
               <motion.div key={product.firestoreId}
                 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                 whileHover={{ backgroundColor: '#1a1a1a' }}
-                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr auto', gap: '10px', padding: '12px 16px', backgroundColor: '#111', borderRadius: '10px', border: '1px solid #222', alignItems: 'center', transition: 'background 0.2s' }}
-              >
+                style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr auto', gap: '10px', padding: '12px 16px', backgroundColor: '#111', borderRadius: '10px', border: '1px solid #222', alignItems: 'center', transition: 'background 0.2s' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt="" style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover' }} />
-                  ) : (
-                    <span style={{ fontSize: '18px' }}>{product.img}</span>
-                  )}
+                  {product.imageUrl ? <img src={product.imageUrl} alt="" style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover' }} /> : <span style={{ fontSize: '18px' }}>{product.img}</span>}
                   <div>
                     <p style={{ fontWeight: 600, fontSize: '12px' }}>{product.name}</p>
-                    {product.ramOptions && (
-                      <p style={{ color: '#EEEEEE44', fontSize: '10px' }}>
-                        💾 {product.ramOptions.join('/')}GB · 💿 {product.storageOptions?.join('/') || 'N/A'}GB
-                      </p>
-                    )}
-                    {product.ram && !product.ramOptions && (
-                      <p style={{ color: '#EEEEEE44', fontSize: '10px' }}>{product.ram}GB · {product.storage}</p>
-                    )}
+                    {product.ramOptions && <p style={{ color: '#EEEEEE44', fontSize: '10px' }}>💾 {product.ramOptions.join('/')}GB · 💿 {product.storageOptions?.join('/') || 'N/A'}GB</p>}
+                    {product.ram && !product.ramOptions && <p style={{ color: '#EEEEEE44', fontSize: '10px' }}>{product.ram}GB · {product.storage}</p>}
                   </div>
                 </div>
                 <span style={{ color: '#EEEEEE55', fontSize: '11px' }}>{product.category}</span>
-                <span style={{ color: '#3b82f6', fontWeight: 600, fontSize: '12px' }}>
-                  Rs.{((product.buyPrice || 0) / 1000).toFixed(0)}k
-                </span>
+                <span style={{ color: '#3b82f6', fontWeight: 600, fontSize: '12px' }}>Rs.{((product.buyPrice || 0) / 1000).toFixed(0)}k</span>
                 <div>
                   {product.discount > 0 ? (
                     <>
@@ -1004,9 +785,7 @@ function AdminProducts() {
                     <p style={{ color: '#CF0A0A', fontWeight: 700, fontSize: '12px' }}>Rs.{((product.sellPrice || product.price || 0) / 1000).toFixed(0)}k</p>
                   )}
                 </div>
-                <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '11px' }}>
-                  Rs.{((product.profitAmount || 0) / 1000).toFixed(1)}k ({product.profitPct || 0}%)
-                </span>
+                <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '11px' }}>Rs.{((product.profitAmount || 0) / 1000).toFixed(1)}k ({product.profitPct || 0}%)</span>
                 <span style={{ color: product.stock <= 5 ? '#f59e0b' : '#22c55e', fontWeight: 600, fontSize: '12px' }}>{product.stock}</span>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <motion.button whileHover={{ scale: 1.1 }} onClick={() => { setEditProduct(product); setShowModal(true) }}
@@ -1024,17 +803,12 @@ function AdminProducts() {
         </div>
       )}
 
-      {/* Empty State */}
       {!loading && filtered.length === 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           style={{ textAlign: 'center', padding: '60px 20px', color: '#EEEEEE33' }}>
           <Package size={48} style={{ margin: '0 auto 16px', display: 'block', opacity: 0.3 }} />
-          <p style={{ fontSize: '16px', fontWeight: 600 }}>
-            {products.length === 0 ? 'No products yet' : 'No products found'}
-          </p>
-          <p style={{ fontSize: '13px', marginTop: '4px' }}>
-            {products.length === 0 ? 'Click "+ Add Product" to add your first product' : 'Try different filters'}
-          </p>
+          <p style={{ fontSize: '16px', fontWeight: 600 }}>{products.length === 0 ? 'No products yet' : 'No products found'}</p>
+          <p style={{ fontSize: '13px', marginTop: '4px' }}>{products.length === 0 ? 'Click "+ Add Product" to add your first product' : 'Try different filters'}</p>
         </motion.div>
       )}
     </AdminLayout>
