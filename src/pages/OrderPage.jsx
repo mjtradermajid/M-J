@@ -63,7 +63,7 @@ function OrderPage() {
 
   // Configuration States — ONLY product selection
   const [quantity, setQuantity] = useState(1)
-  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || '')
+  const [selectedColor, setSelectedColor] = useState('')
   const [selectedRam, setSelectedRam] = useState('')
   const [selectedStorage, setSelectedStorage] = useState('')
 
@@ -95,7 +95,10 @@ function OrderPage() {
   }, [id, product])
 
   const initSelections = (data) => {
-    setSelectedColor(data.colors?.[0] || '')
+    // Safe handling for colors array
+    const colorOpts = data.colors && Array.isArray(data.colors) ? data.colors : (data.colors ? [data.colors] : [])
+    setSelectedColor(colorOpts[0] || '')
+    
     const ramOpts = data.ramOptions || (data.ram ? [data.ram] : [])
     setSelectedRam(ramOpts[0] || data.ram || '')
     const storageOpts = data.storageOptions || (data.storage ? [data.storage] : [])
@@ -155,6 +158,9 @@ function OrderPage() {
   const productSpecs = specsConfig[product.category] || []
   const ramOptions = product.ramOptions || (product.ram ? [product.ram] : [])
   const storageOptions = product.storageOptions || (product.storage ? [product.storage] : [])
+  
+  // Safe validation for colors looping
+  const validColors = product.colors && Array.isArray(product.colors) ? product.colors : (product.colors ? [product.colors] : [])
 
   return (
     <div style={{ backgroundColor: '#000000', minHeight: '100vh', color: '#EEEEEE', padding: '40px 24px', fontFamily: 'sans-serif' }}>
@@ -166,11 +172,6 @@ function OrderPage() {
           <span style={{ color: '#B8960C' }}>J</span>
           <span style={{ color: '#EEEEEE', fontSize: '11px', marginLeft: '5px', letterSpacing: '2px', fontWeight: 600 }}>TRADERS</span>
         </motion.div>
-        
-        {/* <motion.button whileHover={{ x: -4 }} onClick={() => navigate(-1)}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'transparent', border: 'none', color: '#EEEEEE', cursor: 'pointer', fontSize: '14px', fontWeight: 600 }}>
-          <ArrowLeft size={18} /> Back
-        </motion.button> */}
       </nav>
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px' }}>
@@ -267,18 +268,18 @@ function OrderPage() {
           )}
 
           {/* Colors */}
-          {product.colors?.length > 0 && (
+          {validColors.length > 0 && (
             <div style={{ marginBottom: '20px' }}>
               <p style={{ fontSize: '12px', color: '#EEEEEE55', marginBottom: '10px', fontWeight: 600 }}>
                 <span style={{ color: '#CF0A0A' }}>●</span> SELECT COLOR:
               </p>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {product.colors.map((c) => (
+                {validColors.map((c) => (
                   <button key={c} type="button" onClick={() => setSelectedColor(c)}
                     style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: colorMap[c] || '#555', border: selectedColor === c ? '3px solid #CF0A0A' : '2px solid transparent', cursor: 'pointer', transform: selectedColor === c ? 'scale(1.15)' : 'scale(1)', transition: 'all 0.2s', boxShadow: selectedColor === c ? '0 0 10px #CF0A0A66' : 'none' }} title={c} />
                 ))}
               </div>
-              <p style={{ color: '#EEEEEE55', fontSize: '11px', marginTop: '8px' }}>Selected: <span style={{ color: '#EEEEEE', fontWeight: 600 }}>{selectedColor}</span></p>
+              <p style={{ color: '#EEEEEE55', fontSize: '11px', marginTop: '8px' }}>Selected: <span style={{ color: '#EEEEEE', fontWeight: 600 }}>{selectedColor || 'None'}</span></p>
             </div>
           )}
 

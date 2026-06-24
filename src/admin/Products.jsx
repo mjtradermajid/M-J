@@ -115,6 +115,13 @@ function ProductModal({ product, onClose, onSave, saving }) {
 
   const [specs, setSpecs] = useState(getInitialSpecs())
 
+  // ✅ FIX: Colors ko edit mein bhi sahi se load karo
+  const getInitialColors = () => {
+    if (!product?.colors) return ''
+    if (Array.isArray(product.colors)) return product.colors.join(', ')
+    return product.colors
+  }
+
   const [form, setForm] = useState({
     name: product?.name || '',
     category: product?.category || 'Mobiles',
@@ -127,7 +134,7 @@ function ProductModal({ product, onClose, onSave, saving }) {
     badge: product?.badge || '',
     description: product?.description || '',
     status: product?.status || 'Active',
-    colors: product?.colors || [],
+    colors: getInitialColors(),
     rating: product?.rating || 5,
     reviews: product?.reviews || 0,
   })
@@ -218,10 +225,16 @@ function ProductModal({ product, onClose, onSave, saving }) {
       }
     })
 
+    // ✅ FIX: Colors string ko proper array mein convert karo
+    const colorsArray = typeof form.colors === 'string'
+      ? form.colors.split(',').map(c => c.trim()).filter(Boolean)
+      : Array.isArray(form.colors) ? form.colors : []
+
     onSave({
       ...(product?.firestoreId ? { firestoreId: product.firestoreId } : {}),
       ...form,
       ...cleanSpecs,
+      colors: colorsArray, // ✅ override with proper array
       buyPrice,
       profitAmount,
       profitPct,
@@ -254,6 +267,14 @@ function ProductModal({ product, onClose, onSave, saving }) {
     const value = specs[key]
     if (!value) return []
     return value.split(',').map(s => s.trim()).filter(Boolean)
+  }
+
+  // ✅ Helper: colors string/array se display array nikalo
+  const getColorsPreview = () => {
+    if (!form.colors) return []
+    if (typeof form.colors === 'string') return form.colors.split(',').map(c => c.trim()).filter(Boolean)
+    if (Array.isArray(form.colors)) return form.colors
+    return []
   }
 
   return (
@@ -396,14 +417,15 @@ function ProductModal({ product, onClose, onSave, saving }) {
               Available Colors <span style={{ color: '#EEEEEE33', fontWeight: 400 }}>(comma separated)</span>
             </label>
             <input
-              value={typeof form.colors === 'string' ? form.colors : (Array.isArray(form.colors) ? form.colors.join(', ') : '')}
+              value={form.colors}
               onChange={e => setForm(p => ({ ...p, colors: e.target.value }))}
               placeholder="e.g. Black, White, Red"
               style={inputStyle()}
             />
-            {form.colors && (
+            {/* ✅ FIX: getColorsPreview() se sahi chips dikhao */}
+            {getColorsPreview().length > 0 && (
               <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
-                {(typeof form.colors === 'string' ? form.colors.split(',').map(c => c.trim()).filter(Boolean) : Array.isArray(form.colors) ? form.colors : []).map((color, i) => (
+                {getColorsPreview().map((color, i) => (
                   <span key={i} style={{ fontSize: '11px', color: '#EEEEEE88', backgroundColor: '#1a1a1a', padding: '4px 12px', borderRadius: '20px', border: '1px solid #333' }}>{color}</span>
                 ))}
               </div>
@@ -599,7 +621,6 @@ function AdminProducts() {
     }
   }
 
-  // ✅ FIXED: Stock se multiply karo — sahi calculation
   const totalProfit = products.reduce((acc, p) => acc + ((p.profitAmount || 0) * (p.stock || 0)), 0)
   const totalCost   = products.reduce((acc, p) => acc + ((p.buyPrice || 0) * (p.stock || 0)), 0)
 
@@ -632,16 +653,14 @@ function AdminProducts() {
         </motion.button>
       </motion.div>
 
-      {/* ✅ FIXED STATS — stock × price/profit */}
+      {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '20px' }}>
         {[
           { label: 'Total Products', value: products.length,                                                                          color: '#CF0A0A', isNum: true  },
           { label: 'Total Stock',    value: products.reduce((a, p) => a + (p.stock || 0), 0),                                         color: '#22c55e', isNum: true  },
           { label: 'Low Stock',      value: products.filter(p => (p.stock || 0) <= 5).length,                                         color: '#f59e0b', isNum: true  },
           { label: 'On Discount',    value: products.filter(p => p.discount > 0).length,                                              color: '#DC5F00', isNum: true  },
-          // ✅ FIXED: buyPrice × stock
           { label: 'Total Cost',     value: `Rs.${totalCost >= 1_000_000 ? (totalCost / 1_000_000).toFixed(1) + 'M' : (totalCost / 1000).toFixed(0) + 'k'}`,   color: '#3b82f6', isNum: false },
-          // ✅ FIXED: profitAmount × stock
           { label: 'Total Profit',   value: `Rs.${totalProfit >= 1_000_000 ? (totalProfit / 1_000_000).toFixed(1) + 'M' : (totalProfit / 1000).toFixed(0) + 'k'}`, color: '#22c55e', isNum: false },
         ].map((s, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
@@ -717,6 +736,14 @@ function AdminProducts() {
                   {product.ram && !product.ramOptions && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>📱 {product.ram}GB RAM · {product.storage || 'N/A'} Storage</p>}
                   {product.screenSize && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>📺 {product.screenSize} · {product.resolution || 'N/A'}</p>}
                   {product.capacity && <p style={{ color: '#EEEEEE55', fontSize: '10px', marginBottom: '4px' }}>❄️ {product.capacity}L · {product.fridgeType || 'N/A'}</p>}
+                  {/* ✅ Colors display in card */}
+                  {product.colors && Array.isArray(product.colors) && product.colors.length > 0 && (
+                    <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                      {product.colors.map((c, i) => (
+                        <span key={i} style={{ fontSize: '9px', color: '#EEEEEE66', backgroundColor: '#1a1a1a', padding: '2px 8px', borderRadius: '20px', border: '1px solid #333' }}>{c}</span>
+                      ))}
+                    </div>
+                  )}
                   {product.profitAmount > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                       <TrendingUp size={11} style={{ color: '#22c55e' }} />
