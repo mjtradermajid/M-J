@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Block sensitive and non-public pages from indexing
+Disallow: /admin
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /cart
+
+# Update this to your new custom domain sitemap
+Sitemap: https://www.mjtraders.company/sitemap.xml
