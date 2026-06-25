@@ -24,11 +24,11 @@ import cityKarachi    from '../assets/karachi.jpg'
 import cityKashmir    from '../assets/kashmir.jpg'
 import cityLahore     from '../assets/lahore.jpg'
 import cityPeshawar   from '../assets/peshawar.jpg'
-import cityOnline     from '../assets/online.jpg'
+
 
 // ===== CONSTANTS =====
-const SITE_URL   = 'https://mjtraders.vercel.app' // apna actual domain yahan
-const OG_IMAGE   = `${SITE_URL}/og-image.jpg`     // /public/og-image.jpg daalo 1200x630px
+const SITE_URL   = 'https://mjtraders.company' 
+const OG_IMAGE   = `${SITE_URL}/og-image.jpg`  
 
 const carouselSlides = [
   { img: heroPhones, label: ' IPhones',      accent: '#CF0A0A' },
