@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, ArrowRight, Truck, Shield, Headphones, ChevronRight, Zap, Heart, Star, Search, X, MessageCircle, Send, ImagePlus, Clock, User } from 'lucide-react'
+import { ShoppingCart, ArrowRight, Truck, Shield, Headphones, ChevronRight, Zap, Heart, Star, Search, X, MessageCircle, Send, ImagePlus, Clock, User, MapPin } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase/config'
@@ -15,6 +15,15 @@ import heroPix from '../assets/pix.jpg'
 import heroPods from '../assets/pods.jpg'
 import heroPower from '../assets/power.jpg'
 import heroWatch from '../assets/watch.jpg'
+
+// ===== CITY IMAGES =====
+import cityChitral    from '../assets/chitral.png'
+import cityFaisalabad from '../assets/faisalabad.jpg'
+import cityKarachi    from '../assets/karachi.jpg'
+import cityKashmir    from '../assets/kashmir.jpg'
+import cityLahore     from '../assets/lahore.jpg'
+import cityPeshawar   from '../assets/peshawar.jpg'
+import cityOnline     from '../assets/online.jpg'
 
 const carouselSlides = [
   { img: heroPhones, label: ' IPhones',      accent: '#CF0A0A' },
@@ -39,6 +48,17 @@ const heroWords = ['Electronics', 'Appliances', 'Mobiles', 'Laptops']
 const supportNumbers = [
   { name: 'Junaid Ahmad', number: '923487085930', label: 'Sales Support',  role: 'Sales Manager',   avatar: junaidDp },
   { name: 'Abdul Majid',  number: '923259364309', label: 'Order Help',     role: 'Support Manager', avatar: majidDp  },
+]
+
+// ===== CITY DATA =====
+const cities = [
+  { name: 'Chitral',    img: cityChitral,    tutors: '110+'  },
+  { name: 'Lahore',     img: cityLahore,     tutors: '20+' },
+  { name: 'Karachi',    img: cityKarachi,    tutors: '25+'  },
+  { name: 'Faisalabad', img: cityFaisalabad, tutors: '15+'  },
+  { name: 'Islamabad',  img: cityKashmir,    tutors: '40+'  },
+  { name: 'Peshawar',   img: cityPeshawar,   tutors: '200+'   },
+  
 ]
 
 function AnimatedCounter({ target, suffix = '' }) {
@@ -225,9 +245,6 @@ function HeroCarousel() {
           />
         ))}
       </div>
-
-      {/* Progress bar */}
-      
     </div>
   )
 }
@@ -254,10 +271,16 @@ function Home() {
 
   const navigate = useNavigate()
   const feedbackScrollRef = useRef(null)
+  const cityScrollRef     = useRef(null)
 
   const scrollFeedbacks = (dir) => {
     if (!feedbackScrollRef.current) return
     feedbackScrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
+  }
+
+  const scrollCities = (dir) => {
+    if (!cityScrollRef.current) return
+    cityScrollRef.current.scrollBy({ left: dir === 'left' ? -280 : 280, behavior: 'smooth' })
   }
 
   useEffect(() => {
@@ -657,6 +680,114 @@ function Home() {
                 <Send size={16} /> Share Your Feedback
               </motion.button>
             </div>
+          </div>
+        </motion.section>
+      )}
+
+      {/* ===== FIND TUTORS IN YOUR CITY ===== */}
+      {!isFiltering && (
+        <motion.section
+          initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+          style={{ backgroundColor: '#050505', borderTop: '1px solid #CF0A0A22', borderBottom: '1px solid #CF0A0A22', padding: '60px 0' }}
+        >
+          <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+
+            {/* Heading */}
+            <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: '#CF0A0A22', border: '1px solid #CF0A0A55', color: '#CF0A0A', padding: '6px 18px', borderRadius: '50px', fontSize: '11px', fontWeight: 700, letterSpacing: '2px', marginBottom: '14px' }}
+              >
+                <MapPin size={13} /> OUR REACH
+              </motion.div>
+              <h2 style={{ fontSize: 'clamp(24px,4vw,36px)', fontWeight: 900, marginBottom: '8px' }}>
+                We Deliver Across <span style={{ color: '#CF0A0A' }}>Pakistan</span>
+              </h2>
+              <p style={{ color: '#EEEEEE55', fontSize: '14px', maxWidth: '500px', margin: '0 auto' }}>
+                Fast shipping to major cities — M&J Traders covers the whole country!
+              </p>
+              <div style={{ width: '50px', height: '3px', background: 'linear-gradient(to right, #CF0A0A, #DC5F00)', margin: '12px auto 0', borderRadius: '2px' }} />
+            </div>
+
+            {/* City Carousel */}
+            <div style={{ position: 'relative' }}>
+              {/* Left Arrow */}
+              {!isMobile && (
+                <motion.button
+                  whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }}
+                  onClick={() => scrollCities('left')}
+                  style={{ position: 'absolute', left: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}
+                >
+                  <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />
+                </motion.button>
+              )}
+
+              {/* Scrollable Row */}
+              <div
+                ref={cityScrollRef}
+                style={{ display: 'flex', gap: '14px', overflowX: 'auto', padding: '8px 4px 20px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="hide-scrollbar"
+              >
+                {cities.map((city, i) => (
+                  <motion.div
+                    key={city.name}
+                    initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    whileHover={{ y: -6, scale: 1.03 }}
+                    style={{ flex: `0 0 ${isMobile ? '140px' : '180px'}`, scrollSnapAlign: 'start', borderRadius: '16px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: '1px solid #222' }}
+                  >
+                    {/* City Image */}
+                    <div style={{ height: isMobile ? '130px' : '160px', overflow: 'hidden', position: 'relative' }}>
+                      <motion.img
+                        src={city.img} alt={city.name}
+                        whileHover={{ scale: 1.1 }} transition={{ duration: 0.4 }}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                      />
+                      {/* Dark overlay gradient */}
+                      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.75) 100%)' }} />
+                    </div>
+
+                    {/* City Info */}
+                    <div style={{ backgroundColor: '#111111', padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '2px' }}>
+                        <MapPin size={11} style={{ color: '#CF0A0A', flexShrink: 0 }} />
+                        <p style={{ color: '#EEEEEE', fontSize: isMobile ? '12px' : '14px', fontWeight: 700, margin: 0 }}>{city.name}</p>
+                      </div>
+                      <p style={{ color: '#EEEEEE55', fontSize: '11px', margin: 0 }}>{city.tutors} orders delivered</p>
+                    </div>
+
+                    {/* Hover glow border */}
+                    <motion.div
+                      initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}
+                      style={{ position: 'absolute', inset: 0, border: '2px solid #CF0A0A55', borderRadius: '16px', pointerEvents: 'none' }}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Right Arrow */}
+              {!isMobile && (
+                <motion.button
+                  whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }}
+                  onClick={() => scrollCities('right')}
+                  style={{ position: 'absolute', right: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}
+                >
+                  <ChevronRight size={20} />
+                </motion.button>
+              )}
+            </div>
+
+            {/* Bottom note */}
+            <p style={{ textAlign: 'center', color: '#EEEEEE33', fontSize: '12px', marginTop: '8px' }}>
+              Don't see your city?{' '}
+              <span
+                style={{ color: '#CF0A0A', cursor: 'pointer', fontWeight: 600 }}
+                onClick={() => window.open('https://wa.me/923487085930', '_blank')}
+              >
+                Contact us
+              </span>
+              {' '}— we deliver all over Pakistan!
+            </p>
           </div>
         </motion.section>
       )}
