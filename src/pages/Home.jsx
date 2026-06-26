@@ -149,7 +149,6 @@ const structuredData = {
   },
 }
 
-// ===== BREADCRUMB SCHEMA =====
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -163,7 +162,6 @@ const breadcrumbSchema = {
   ],
 }
 
-// ===== FAQ SCHEMA (boosts Google rich results) =====
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -203,7 +201,6 @@ const faqSchema = {
   ],
 }
 
-// ===== ANIMATED COUNTER =====
 function AnimatedCounter({ target, suffix = '' }) {
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -235,7 +232,6 @@ function timeAgo(timestamp) {
   return `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? 's' : ''} ago`
 }
 
-// ===== 3D COVERFLOW HERO CAROUSEL =====
 function HeroCarousel() {
   const [current, setCurrent] = useState(0)
   const timerRef = useRef(null)
@@ -394,7 +390,6 @@ function HeroCarousel() {
   )
 }
 
-// ===== MAIN HOME COMPONENT =====
 function Home() {
   const [currentWord, setCurrentWord]           = useState(0)
   const [cartCount, setCartCount]               = useState(0)
@@ -524,7 +519,6 @@ function Home() {
   const gridCols        = windowWidth >= 1024 ? 'repeat(3,1fr)' : windowWidth >= 768 ? 'repeat(3,1fr)' : 'repeat(2,1fr)'
   const isMobile        = windowWidth < 768
 
-  // Dynamic meta description based on filtering
   const metaTitle = isFiltering && activeCategory !== 'All'
     ? `Buy ${activeCategory} in Pakistan | M&J Traders — Best Prices`
     : 'M&J Traders | Original iPhones, Laptops & Electronics — Best Prices Pakistan'
@@ -536,11 +530,7 @@ function Home() {
   return (
     <div style={{ backgroundColor: '#000000', minHeight: '100vh', color: '#EEEEEE', overflowX: 'hidden' }}>
 
-      {/* =====================================================
-          FULL PROFESSIONAL SEO + GEO-TARGETING META SECTION
-          ===================================================== */}
       <Helmet>
-        {/* ── CORE ── */}
         <html lang="en" />
         <title>{metaTitle}</title>
         <meta name="description" content={metaDesc} />
@@ -553,8 +543,6 @@ function Home() {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="M&J Traders" />
         <link rel="canonical" href={SITE_URL} />
-
-        {/* ── OPEN GRAPH (Facebook / WhatsApp / LinkedIn) ── */}
         <meta property="og:type"         content="website" />
         <meta property="og:site_name"    content="M&J Traders" />
         <meta property="og:url"          content={SITE_URL} />
@@ -566,40 +554,22 @@ function Home() {
         <meta property="og:image:alt"    content="M&J Traders — Pakistan Premium Electronics Store" />
         <meta property="og:locale"       content="en_PK" />
         <meta property="og:locale:alternate" content="ur_PK" />
-
-        {/* ── TWITTER / X CARD ── */}
         <meta name="twitter:card"        content="summary_large_image" />
         <meta name="twitter:site"        content="@m_j_traders" />
         <meta name="twitter:title"       content="M&J Traders | Original Electronics Pakistan" />
         <meta name="twitter:description" content="Buy 100% original iPhones, Laptops, Smart Watches & more. Fast delivery all over Pakistan. Cash on Delivery available." />
         <meta name="twitter:image"       content={OG_IMAGE} />
         <meta name="twitter:image:alt"   content="M&J Traders Pakistan Electronics" />
-
-        {/* ── GEO-TARGETING (Local SEO) ── */}
         <meta name="geo.region"    content="PK-KP" />
         <meta name="geo.placename" content="Peshawar, Khyber Pakhtunkhwa, Pakistan" />
         <meta name="geo.position"  content="34.0151;71.5249" />
         <meta name="ICBM"          content="34.0151, 71.5249" />
-
-        {/* ── LANGUAGE / REGIONAL ── */}
         <link rel="alternate" hrefLang="en-pk" href={SITE_URL} />
         <link rel="alternate" hrefLang="ur"    href={SITE_URL} />
         <link rel="alternate" hrefLang="x-default" href={SITE_URL} />
-
-        {/* ── STRUCTURED DATA: ElectronicsStore ── */}
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-
-        {/* ── STRUCTURED DATA: BreadcrumbList ── */}
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbSchema)}
-        </script>
-
-        {/* ── STRUCTURED DATA: FAQPage (Google rich results) ── */}
-        <script type="application/ld+json">
-          {JSON.stringify(faqSchema)}
-        </script>
+        <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 
       {/* ===== NAVBAR ===== */}
@@ -608,7 +578,7 @@ function Home() {
         role="navigation" aria-label="Main Navigation"
         style={{ borderBottom: '1px solid #CF0A0A44', backgroundColor: '#0a0a0aee', backdropFilter: 'blur(20px)', boxShadow: '0 2px 30px #CF0A0A22', position: 'sticky', top: 0, zIndex: 50, padding: '12px 16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
-          <motion.div whileHover={{ scale: 1.05 }} onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'baseline', gap: '2px', flexShrink: 0 }} role="link" aria-label="M&J Traders Home">
+          <motion.div whileHover={{ scale: 1.05 }} onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'baseline', gap: '2px', flexShrink: 0 }}>
             <motion.span style={{ color: '#CF0A0A', fontSize: '26px', fontWeight: 900 }} animate={{ textShadow: ['0 0 10px #CF0A0A','0 0 30px #CF0A0A','0 0 10px #CF0A0A'] }} transition={{ duration: 2, repeat: Infinity }}>M</motion.span>
             <span style={{ color: '#CF0A0A', fontSize: '26px', fontWeight: 900 }}>&</span>
             <motion.span style={{ color: '#B8960C', fontSize: '26px', fontWeight: 900 }} animate={{ textShadow: ['0 0 10px #B8960C','0 0 30px #B8960C','0 0 10px #B8960C'] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}>J</motion.span>
@@ -624,50 +594,35 @@ function Home() {
               <motion.button key={link.label} onClick={() => navigate(link.path)}
                 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}
                 whileHover={{ color: '#CF0A0A', y: -2 }}
-                aria-label={`Navigate to ${link.label}`}
                 style={{ color: '#EEEEEE', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap' }}>
                 {link.label}
               </motion.button>
             ))}
-            <motion.div whileHover={{ scale: 1.2 }} style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/cart')} role="link" aria-label={`Shopping cart with ${cartCount} items`}>
+            <motion.div whileHover={{ scale: 1.2 }} style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }} onClick={() => navigate('/cart')}>
               <ShoppingCart size={20} style={{ color: '#EEEEEE' }} />
               <motion.span style={{ backgroundColor: '#CF0A0A', position: 'absolute', top: '-8px', right: '-8px', color: 'white', fontSize: '9px', fontWeight: 800, width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }} animate={{ scale: [1,1.3,1] }} transition={{ duration: 1, repeat: Infinity }}>{cartCount}</motion.span>
             </motion.div>
           </div>
         </div>
-        <div style={{ position: 'relative', width: '100%' }} role="search">
+        <div style={{ position: 'relative', width: '100%' }}>
           <Search size={15} style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: '#CF0A0A' }} />
           <input
-            type="search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            type="search" value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Search electronics... (e.g. iPhone 15, Laptop, AC)"
-            aria-label="Search products"
             style={{ width: '100%', backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '50px', padding: '9px 38px', color: '#EEEEEE', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }}
-            onFocus={e => e.target.style.borderColor = '#CF0A0A'}
-            onBlur={e => e.target.style.borderColor = '#333'}
+            onFocus={e => e.target.style.borderColor = '#CF0A0A'} onBlur={e => e.target.style.borderColor = '#333'}
           />
-          {search && (
-            <motion.div whileHover={{ scale: 1.2 }} onClick={() => setSearch('')} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#EEEEEE55' }} role="button" aria-label="Clear search">
-              <X size={16} />
-            </motion.div>
-          )}
+          {search && <motion.div whileHover={{ scale: 1.2 }} onClick={() => setSearch('')} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', color: '#EEEEEE55' }}><X size={16} /></motion.div>}
         </div>
       </motion.nav>
 
       {/* ===== CATEGORY FILTER ===== */}
       {categories.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-          role="navigation" aria-label="Product Categories"
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
           style={{ backgroundColor: '#0a0a0a', borderBottom: '1px solid #CF0A0A22', position: 'sticky', top: '96px', zIndex: 40, display: 'flex', gap: '10px', padding: '10px 16px', overflowX: 'auto', whiteSpace: 'nowrap' }}
           className="hide-scrollbar">
           {['All', ...categories].map(cat => (
-            <motion.button
-              key={cat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={() => setActiveCategory(cat)}
-              aria-label={`Filter by ${cat}`}
-              aria-pressed={activeCategory === cat}
+            <motion.button key={cat} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setActiveCategory(cat)}
               style={{ padding: '7px 16px', borderRadius: '50px', cursor: 'pointer', fontSize: '12px', fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0, backgroundColor: activeCategory === cat ? '#CF0A0A' : '#1a1a1a', color: activeCategory === cat ? 'white' : '#EEEEEE88', border: activeCategory === cat ? '1px solid #CF0A0A' : '1px solid #333', transition: 'all 0.2s' }}>
               {cat} {cat !== 'All' && `(${allProducts.filter(p => p.category === cat).length})`}
             </motion.button>
@@ -677,10 +632,7 @@ function Home() {
 
       {/* ===== HERO ===== */}
       {!isFiltering && (
-        <section
-          aria-label="M&J Traders — Pakistan's Premium Electronics Store Hero"
-          itemScope itemType="https://schema.org/WPHeader"
-          style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', flexWrap: 'wrap', position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg, #0a0000 0%, #180000 20%, #0d0000 55%, #000000 100%)' }}>
+        <section style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', flexWrap: 'wrap', position: 'relative', overflow: 'hidden', background: 'linear-gradient(160deg, #0a0000 0%, #180000 20%, #0d0000 55%, #000000 100%)' }}>
           <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
             <motion.div animate={{ scale: [1,1.3,1], opacity: [0.2,0.4,0.2] }} transition={{ duration: 5, repeat: Infinity }}
               style={{ position: 'absolute', top: '50%', left: '30%', transform: 'translate(-50%,-50%)', width: '900px', height: '900px', borderRadius: '50%', background: 'radial-gradient(circle, #CF0A0A44 0%, transparent 65%)' }} />
@@ -697,7 +649,6 @@ function Home() {
               Pakistan's #1 Premium Electronics Store
             </motion.div>
 
-            {/* SEO-friendly H1 */}
             <h1 style={{ margin: 0, marginBottom: '16px' }}>
               <motion.span initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
                 style={{ display: 'block', fontSize: 'clamp(32px,5vw,68px)', fontWeight: 900, lineHeight: 1.1, color: '#EEEEEE' }}>
@@ -721,12 +672,10 @@ function Home() {
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }} style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '36px' }}>
               <motion.button whileHover={{ scale: 1.06, boxShadow: '0 0 35px #CF0A0A99' }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/products')}
-                aria-label="Shop all electronics at M&J Traders"
                 style={{ backgroundColor: '#CF0A0A', padding: '12px 28px', borderRadius: '50px', fontWeight: 700, fontSize: '15px', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Shop Now <ArrowRight size={17} />
               </motion.button>
               <motion.button whileHover={{ scale: 1.06, boxShadow: '0 0 25px #DC5F0066' }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/track-order')}
-                aria-label="Track your M&J Traders order"
                 style={{ border: '2px solid #DC5F00', color: '#DC5F00', padding: '12px 28px', borderRadius: '50px', fontWeight: 700, fontSize: '15px', backgroundColor: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 Track Order <ChevronRight size={17} />
               </motion.button>
@@ -738,9 +687,7 @@ function Home() {
                 { icon: '⚡', value: 3,    suffix: ' Days', label: 'Fast Delivery' },
               ].map((stat, i) => (
                 <div key={i}>
-                  <p style={{ color: '#CF0A0A', fontSize: '22px', fontWeight: 900 }}>
-                    {stat.icon} <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                  </p>
+                  <p style={{ color: '#CF0A0A', fontSize: '22px', fontWeight: 900 }}>{stat.icon} <AnimatedCounter target={stat.value} suffix={stat.suffix} /></p>
                   <p style={{ color: '#EEEEEE44', fontSize: '11px', marginTop: '2px' }}>{stat.label}</p>
                 </div>
               ))}
@@ -755,9 +702,7 @@ function Home() {
 
       {/* ===== FEATURES BAR ===== */}
       {!isFiltering && (
-        <motion.section
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-          aria-label="M&J Traders Key Features"
+        <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
           style={{ backgroundColor: '#0D0D0D', borderTop: '1px solid #CF0A0A33', borderBottom: '1px solid #CF0A0A33', padding: '32px 24px' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: '16px' }}>
             {features.map((f, i) => (
@@ -774,14 +719,12 @@ function Home() {
       )}
 
       {/* ===== PRODUCTS GRID ===== */}
-      <section aria-label="M&J Traders Products" style={{ padding: '60px 24px' }}>
+      <section style={{ padding: '60px 24px' }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginBottom: '48px' }}>
           {isFiltering ? (
             <>
               <h2 style={{ fontSize: 'clamp(26px,4vw,40px)', fontWeight: 900, marginBottom: '8px' }}>
-                {search
-                  ? <>Search results for "<span style={{ color: '#CF0A0A' }}>{search}</span>"</>
-                  : <>Showing <span style={{ color: '#CF0A0A' }}>{activeCategory}</span></>}
+                {search ? <>Search results for "<span style={{ color: '#CF0A0A' }}>{search}</span>"</> : <>Showing <span style={{ color: '#CF0A0A' }}>{activeCategory}</span></>}
               </h2>
               <p style={{ color: '#EEEEEE55', fontSize: '14px' }}>{filteredProducts.length} product(s) found</p>
             </>
@@ -807,86 +750,53 @@ function Home() {
               <p style={{ fontSize: '16px', fontWeight: 600 }}>No products found</p>
             </div>
           ) : displayProducts.map((product, i) => {
-            const currentPrice = Number(product.price || product.sellPrice || 0)
-            const oldPrice     = Number(product.oldPrice || 0)
-            const discountPct  = oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0
+            // ✅ DISCOUNT FIX — admin discount% apply hota hai
+            const sellPrice_   = Number(product.sellPrice || product.price || 0)
+            const discount_    = Number(product.discount || 0)
+            const currentPrice = discount_ > 0 ? Math.round(sellPrice_ * (1 - discount_ / 100)) : sellPrice_
+            const oldPrice     = discount_ > 0 ? sellPrice_ : Number(product.oldPrice || 0)
+            const discountPct  = discount_ > 0 ? discount_ : (oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0)
             return (
-              <motion.article
-                key={product.id}
-                initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} whileHover={{ y: -6 }}
-                transition={{ delay: i * 0.05, type: 'spring', stiffness: 150 }}
-                itemScope itemType="https://schema.org/Product"
+              <motion.div key={product.id} initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} whileHover={{ y: -6 }} transition={{ delay: i * 0.05, type: 'spring', stiffness: 150 }}
                 style={{ backgroundColor: '#111111', border: '1px solid #222222', borderRadius: '16px', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}>
-                {product.badge && (
-                  <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3, backgroundColor: product.badge === 'Non-PTA' ? '#CF0A0A' : product.badge === 'PTA' ? '#22c55e' : product.badge === 'CPID' ? '#f59e0b' : '#CF0A0A', color: 'white', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '20px' }}>
-                    {product.badge}
-                  </div>
-                )}
-                <motion.button
-                  whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}
-                  onClick={e => { e.stopPropagation(); toggleWishlist(product.id) }}
-                  aria-label={`${wishlist.includes(product.id) ? 'Remove from' : 'Add to'} wishlist: ${product.name}`}
+                {product.badge && <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3, backgroundColor: product.badge === 'Non-PTA' ? '#CF0A0A' : product.badge === 'PTA' ? '#22c55e' : product.badge === 'CPID' ? '#f59e0b' : '#CF0A0A', color: 'white', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '20px' }}>{product.badge}</div>}
+                <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id) }}
                   style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 3, backgroundColor: '#00000088', border: 'none', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Heart size={13} fill={wishlist.includes(product.id) ? '#CF0A0A' : 'none'} style={{ color: wishlist.includes(product.id) ? '#CF0A0A' : '#EEEEEE' }} />
                 </motion.button>
                 <div onClick={() => navigate(`/product/${product.id}`)} style={{ height: isMobile ? '150px' : '200px', overflow: 'hidden', backgroundColor: '#1a1a1a', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {product.imageUrl && product.imageUrl.trim() !== '' ? (
-                    <motion.img
-                      src={product.imageUrl}
-                      alt={`${product.name} — Buy online at M&J Traders Pakistan. ${product.badge ? product.badge + ' approved.' : ''} Price: Rs. ${currentPrice.toLocaleString()}`}
-                      loading="lazy"
-                      whileHover={{ scale: 1.08 }} transition={{ duration: 0.4 }}
-                      itemProp="image"
-                      style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px', filter: 'brightness(0.9)' }}
-                    />
-                  ) : (
-                    <span style={{ fontSize: '50px' }}>{product.img || '📦'}</span>
-                  )}
+                  {product.imageUrl && product.imageUrl.trim() !== "" ? (
+                    <motion.img src={product.imageUrl} alt={product.name} whileHover={{ scale: 1.08 }} transition={{ duration: 0.4 }} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px', filter: 'brightness(0.9)' }} />
+                  ) : <span style={{ fontSize: '50px' }}>{product.img || '📦'}</span>}
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 60%, #111111 100%)', pointerEvents: 'none' }} />
                 </div>
                 <div style={{ padding: isMobile ? '10px' : '16px' }}>
-                  <p style={{ color: '#EEEEEE55', fontSize: isMobile ? '10px' : '11px', marginBottom: '3px' }} itemProp="category">{product.category || 'General'}</p>
-                  <p style={{ fontWeight: 700, fontSize: isMobile ? '13px' : '15px', marginBottom: '6px', color: '#EEEEEE', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} itemProp="name">{product.name}</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '8px' }} itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} size={10} fill={j < Math.floor(product.rating || 5) ? '#B8960C' : 'none'} style={{ color: '#B8960C' }} />
-                    ))}
-                    <span style={{ color: '#EEEEEE55', fontSize: '10px', marginLeft: '3px' }}>
-                      (<span itemProp="reviewCount">{product.reviews || 0}</span>)
-                    </span>
-                    <meta itemProp="ratingValue" content={product.rating || 5} />
-                    <meta itemProp="bestRating"  content="5" />
+                  <p style={{ color: '#EEEEEE55', fontSize: isMobile ? '10px' : '11px', marginBottom: '3px' }}>{product.category || 'General'}</p>
+                  <p style={{ fontWeight: 700, fontSize: isMobile ? '13px' : '15px', marginBottom: '6px', color: '#EEEEEE', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.name}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginBottom: '8px' }}>
+                    {[...Array(5)].map((_, j) => <Star key={j} size={10} fill={j < Math.floor(product.rating || 5) ? '#B8960C' : 'none'} style={{ color: '#B8960C' }} />)}
+                    <span style={{ color: '#EEEEEE55', fontSize: '10px', marginLeft: '3px' }}>({product.reviews || 0})</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }} itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                    <meta itemProp="priceCurrency" content="PKR" />
-                    <meta itemProp="price"          content={currentPrice} />
-                    <meta itemProp="availability"   content="https://schema.org/InStock" />
-                    <meta itemProp="seller"         content="M&J Traders" />
-                    <p style={{ color: '#CF0A0A', fontSize: isMobile ? '15px' : '18px', fontWeight: 900 }}>
-                      Rs. {currentPrice.toLocaleString()}
-                    </p>
-                    {oldPrice > currentPrice && (
-                      <>
-                        <p style={{ color: '#EEEEEE33', fontSize: '11px', textDecoration: 'line-through' }}>Rs. {oldPrice.toLocaleString()}</p>
-                        <span style={{ backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '10px' }}>-{discountPct}%</span>
-                      </>
-                    )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <p style={{ color: '#CF0A0A', fontSize: isMobile ? '15px' : '18px', fontWeight: 900 }}>Rs. {currentPrice.toLocaleString()}</p>
+                    {oldPrice > currentPrice && <>
+                      <p style={{ color: '#EEEEEE33', fontSize: '11px', textDecoration: 'line-through' }}>Rs. {oldPrice.toLocaleString()}</p>
+                      <span style={{ backgroundColor: '#DC5F0022', color: '#DC5F00', fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '10px' }}>-{discountPct}%</span>
+                    </>}
                   </div>
                   <div style={{ display: 'flex', gap: '6px', position: 'relative', zIndex: 5 }}>
-                    <motion.button whileHover={{ scale: 1.03, boxShadow: '0 0 20px #CF0A0A66' }} whileTap={{ scale: 0.97 }} onClick={e => handleOrderNow(product, e)}
-                      aria-label={`Order ${product.name}`}
+                    <motion.button whileHover={{ scale: 1.03, boxShadow: '0 0 20px #CF0A0A66' }} whileTap={{ scale: 0.97 }} onClick={(e) => handleOrderNow(product, e)}
                       style={{ flex: 1, backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '8px', padding: isMobile ? '9px 4px' : '11px 4px', fontWeight: 700, fontSize: isMobile ? '11px' : '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <ShoppingCart size={12} /> Order
                     </motion.button>
-                    <motion.button whileHover={{ scale: 1.03, boxShadow: '0 0 15px #DC5F0066' }} whileTap={{ scale: 0.97 }} onClick={e => handleAddToCart(product, e)}
-                      aria-label={`Add ${product.name} to cart`}
+                    <motion.button whileHover={{ scale: 1.03, boxShadow: '0 0 15px #DC5F0066' }} whileTap={{ scale: 0.97 }} onClick={(e) => handleAddToCart(product, e)}
                       style={{ flex: 1, backgroundColor: 'transparent', color: '#DC5F00', border: '2px solid #DC5F00', borderRadius: '8px', padding: isMobile ? '9px 4px' : '11px 4px', fontWeight: 700, fontSize: isMobile ? '11px' : '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                       <ShoppingCart size={12} /> Cart
                     </motion.button>
                   </div>
                 </div>
                 <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} style={{ position: 'absolute', inset: 0, border: '2px solid #CF0A0A44', borderRadius: '16px', pointerEvents: 'none' }} />
-              </motion.article>
+              </motion.div>
             )
           })}
         </div>
@@ -894,7 +804,6 @@ function Home() {
         {!isFiltering && (
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', marginTop: '40px' }}>
             <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 30px #CF0A0A66' }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/products')}
-              aria-label="View all products at M&J Traders Pakistan"
               style={{ border: '2px solid #CF0A0A', color: '#CF0A0A', backgroundColor: 'transparent', padding: '13px 40px', borderRadius: '50px', fontWeight: 700, fontSize: '15px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
               View All Products <ArrowRight size={17} />
             </motion.button>
@@ -904,14 +813,11 @@ function Home() {
 
       {/* ===== SALE BANNER ===== */}
       {!isFiltering && (
-        <motion.section
-          initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
-          aria-label="Mega Sale Offer"
+        <motion.section initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
           style={{ background: 'linear-gradient(135deg, #CF0A0A 0%, #DC5F00 100%)', margin: '0 16px 60px 16px', borderRadius: '20px', padding: '40px 24px', textAlign: 'center' }}>
-          <p style={{ fontSize: 'clamp(22px,4vw,36px)', fontWeight: 900, color: 'white', margin: 0 }}>🔥 Mega Sale — Up to 30% OFF!</p>
-          <p style={{ color: 'rgba(255,255,255,0.8)', marginTop: '8px', fontSize: '14px', marginBottom: 0 }}>Limited time offer on selected electronics in Pakistan</p>
+          <motion.p animate={{ scale: [1, 1.04, 1] }} transition={{ duration: 1.5, repeat: Infinity }} style={{ fontSize: 'clamp(22px,4vw,36px)', fontWeight: 900, color: 'white' }}>🔥 Mega Sale — Up to 30% OFF!</motion.p>
+          <p style={{ color: 'rgba(255,255,255,0.8)', marginTop: '8px', fontSize: '14px' }}>Limited time offer on selected electronics in Pakistan</p>
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate('/sale')}
-            aria-label="Shop sale products at M&J Traders"
             style={{ marginTop: '18px', backgroundColor: 'black', color: 'white', padding: '11px 28px', borderRadius: '50px', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '14px' }}>
             Shop Sale →
           </motion.button>
@@ -920,9 +826,7 @@ function Home() {
 
       {/* ===== CUSTOMER FEEDBACKS ===== */}
       {!isFiltering && (
-        <motion.section
-          initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          aria-label="Customer Reviews and Feedback"
+        <motion.section initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           style={{ backgroundColor: '#0a0a0a', borderTop: '1px solid #CF0A0A22', borderBottom: '1px solid #CF0A0A22', padding: '60px 0', marginBottom: '40px' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
             <div style={{ textAlign: 'center', marginBottom: '36px' }}>
@@ -937,28 +841,23 @@ function Home() {
             {feedbacks.length > 0 ? (
               <div style={{ position: 'relative' }}>
                 {!isMobile && (
-                  <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollFeedbacks('left')} aria-label="Scroll reviews left"
+                  <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollFeedbacks('left')}
                     style={{ position: 'absolute', left: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
                     <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />
                   </motion.button>
                 )}
                 <div ref={feedbackScrollRef} style={{ display: 'flex', gap: '16px', overflowX: 'auto', padding: '8px 4px 20px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="hide-scrollbar">
                   {feedbacks.map((feedback, i) => (
-                    <motion.div
-                      key={feedback.id} initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4, scale: 1.02 }}
-                      itemScope itemType="https://schema.org/Review"
+                    <motion.div key={feedback.id} initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4, scale: 1.02 }}
                       style={{ flex: '0 0 300px', scrollSnapAlign: 'start', backgroundColor: '#111111', border: '1px solid #222222', borderRadius: '18px', padding: '20px', position: 'relative', minHeight: '200px', display: 'flex', flexDirection: 'column' }}>
-                      <meta itemProp="itemReviewed" content="M&J Traders Electronics" />
                       <div style={{ position: 'absolute', top: '12px', right: '16px', fontSize: '48px', color: '#CF0A0A11', fontFamily: 'serif', lineHeight: 1 }}>"</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                         <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#CF0A0A22', border: '2px solid #CF0A0A44', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <User size={20} style={{ color: '#CF0A0A' }} />
                         </div>
                         <div>
-                          <p style={{ color: '#EEEEEE', fontSize: '15px', fontWeight: 700, margin: 0 }} itemProp="author">{feedback.name}</p>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }} itemProp="reviewRating" itemScope itemType="https://schema.org/Rating">
-                            <meta itemProp="ratingValue" content={feedback.rating || 5} />
-                            <meta itemProp="bestRating"  content="5" />
+                          <p style={{ color: '#EEEEEE', fontSize: '15px', fontWeight: 700, margin: 0 }}>{feedback.name}</p>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
                             <div style={{ display: 'flex', gap: '2px' }}>
                               {[...Array(5)].map((_, j) => <Star key={j} size={12} fill={j < (feedback.rating || 5) ? '#B8960C' : 'none'} style={{ color: '#B8960C' }} />)}
                             </div>
@@ -968,10 +867,10 @@ function Home() {
                       </div>
                       {feedback.imageUrl && (
                         <div style={{ width: '100%', height: '140px', borderRadius: '12px', overflow: 'hidden', marginBottom: '12px', border: '1px solid #333' }}>
-                          <img src={feedback.imageUrl} alt={`Customer review photo by ${feedback.name} — M&J Traders Pakistan`} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={feedback.imageUrl} alt="Feedback" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       )}
-                      <p style={{ color: '#EEEEEEaa', fontSize: '14px', lineHeight: 1.6, flex: 1, margin: 0 }} itemProp="reviewBody">{feedback.text}</p>
+                      <p style={{ color: '#EEEEEEaa', fontSize: '14px', lineHeight: 1.6, flex: 1, margin: 0 }}>{feedback.text}</p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid #222' }}>
                         <Clock size={12} style={{ color: '#EEEEEE44' }} />
                         <span style={{ color: '#EEEEEE44', fontSize: '11px' }}>{timeAgo(feedback.approvedAt || feedback.createdAt)}</span>
@@ -980,7 +879,7 @@ function Home() {
                   ))}
                 </div>
                 {!isMobile && (
-                  <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollFeedbacks('right')} aria-label="Scroll reviews right"
+                  <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollFeedbacks('right')}
                     style={{ position: 'absolute', right: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
                     <ChevronRight size={20} />
                   </motion.button>
@@ -996,7 +895,6 @@ function Home() {
 
             <div style={{ textAlign: 'center', marginTop: '24px' }}>
               <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 25px #CF0A0A55' }} whileTap={{ scale: 0.95 }} onClick={() => setShowFeedbackForm(true)}
-                aria-label="Share your feedback about M&J Traders"
                 style={{ backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '50px', padding: '14px 32px', fontWeight: 700, fontSize: '15px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                 <Send size={16} /> Share Your Feedback
               </motion.button>
@@ -1005,11 +903,9 @@ function Home() {
         </motion.section>
       )}
 
-      {/* ===== CITY DELIVERY COVERAGE (GEO-TARGETED) ===== */}
+      {/* ===== CITY DELIVERY COVERAGE ===== */}
       {!isFiltering && (
-        <motion.section
-          initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-          aria-label="M&J Traders Delivery Coverage Across Pakistan"
+        <motion.section initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
           style={{ backgroundColor: '#050505', borderTop: '1px solid #CF0A0A22', borderBottom: '1px solid #CF0A0A22', padding: '60px 0' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
             <div style={{ textAlign: 'center', marginBottom: '36px' }}>
@@ -1028,36 +924,25 @@ function Home() {
 
             <div style={{ position: 'relative' }}>
               {!isMobile && (
-                <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollCities('left')} aria-label="Scroll cities left"
+                <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollCities('left')}
                   style={{ position: 'absolute', left: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
                   <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />
                 </motion.button>
               )}
-
               <div ref={cityScrollRef} style={{ display: 'flex', gap: '14px', overflowX: 'auto', padding: '8px 4px 20px', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none', msOverflowStyle: 'none' }} className="hide-scrollbar">
                 {cities.map((city, i) => (
-                  <motion.div
-                    key={city.name}
-                    initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.07 }}
-                    whileHover={{ y: -6, scale: 1.03 }}
-                    itemScope itemType="https://schema.org/City"
+                  <motion.div key={city.name} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} whileHover={{ y: -6, scale: 1.03 }}
                     style={{ flex: `0 0 ${isMobile ? '140px' : '180px'}`, scrollSnapAlign: 'start', borderRadius: '16px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: '1px solid #222' }}>
-                    <meta itemProp="name" content={city.name} />
                     <div style={{ height: isMobile ? '130px' : '160px', overflow: 'hidden', position: 'relative' }}>
-                      <motion.img
-                        src={city.img}
-                        alt={`M&J Traders delivers original electronics to ${city.name} — ${city.orders} orders delivered`}
-                        loading="lazy"
+                      <motion.img src={city.img} alt={`M&J Traders delivers to ${city.name}`} loading="lazy"
                         whileHover={{ scale: 1.1 }} transition={{ duration: 0.4 }}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                      />
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.75) 100%)' }} />
                     </div>
                     <div style={{ backgroundColor: '#111111', padding: '10px 12px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '2px' }}>
                         <MapPin size={11} style={{ color: '#CF0A0A', flexShrink: 0 }} />
-                        <h3 style={{ color: '#EEEEEE', fontSize: isMobile ? '12px' : '14px', fontWeight: 700, margin: 0 }}>{city.name}</h3>
+                        <p style={{ color: '#EEEEEE', fontSize: isMobile ? '12px' : '14px', fontWeight: 700, margin: 0 }}>{city.name}</p>
                       </div>
                       <p style={{ color: '#EEEEEE55', fontSize: '11px', margin: 0 }}>{city.orders} orders delivered</p>
                     </div>
@@ -1065,18 +950,16 @@ function Home() {
                   </motion.div>
                 ))}
               </div>
-
               {!isMobile && (
-                <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollCities('right')} aria-label="Scroll cities right"
+                <motion.button whileHover={{ scale: 1.1, backgroundColor: '#CF0A0A' }} whileTap={{ scale: 0.95 }} onClick={() => scrollCities('right')}
                   style={{ position: 'absolute', right: '-18px', top: '50%', transform: 'translateY(-50%)', zIndex: 10, width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#1a1a1a', border: '1px solid #CF0A0A55', color: '#EEEEEE', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
                   <ChevronRight size={20} />
                 </motion.button>
               )}
             </div>
-
             <p style={{ textAlign: 'center', color: '#EEEEEE33', fontSize: '12px', marginTop: '8px' }}>
               Don't see your city?{' '}
-              <span style={{ color: '#CF0A0A', cursor: 'pointer', fontWeight: 600 }} onClick={() => window.open('https://wa.me/923487085930', '_blank')} role="link" aria-label="Contact M&J Traders on WhatsApp for delivery inquiry">
+              <span style={{ color: '#CF0A0A', cursor: 'pointer', fontWeight: 600 }} onClick={() => window.open('https://wa.me/923487085930', '_blank')}>
                 Contact us on WhatsApp
               </span>
               {' '}— we deliver all over Pakistan!
@@ -1088,9 +971,7 @@ function Home() {
       {/* ===== FEEDBACK MODAL ===== */}
       <AnimatePresence>
         {showFeedbackForm && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            role="dialog" aria-modal="true" aria-label="Share Your Feedback"
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
             onClick={() => setShowFeedbackForm(false)}>
             <motion.div initial={{ opacity: 0, y: 30, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 30, scale: 0.95 }} transition={{ type: 'spring', stiffness: 300, damping: 25 }}
@@ -1101,12 +982,12 @@ function Home() {
                   <h3 style={{ color: '#EEEEEE', fontSize: '20px', fontWeight: 800, margin: 0 }}>Share Your Experience</h3>
                   <p style={{ color: '#EEEEEE55', fontSize: '13px', margin: '4px 0 0' }}>Your feedback helps us improve</p>
                 </div>
-                <button onClick={() => setShowFeedbackForm(false)} aria-label="Close feedback form" style={{ background: 'none', border: 'none', color: '#EEEEEE55', cursor: 'pointer' }}><X size={24} /></button>
+                <button onClick={() => setShowFeedbackForm(false)} style={{ background: 'none', border: 'none', color: '#EEEEEE55', cursor: 'pointer' }}><X size={24} /></button>
               </div>
               <form onSubmit={handleSubmitFeedback}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label htmlFor="feedback-name" style={{ color: '#EEEEEE88', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Your Name *</label>
-                  <input id="feedback-name" type="text" value={feedbackName} onChange={e => setFeedbackName(e.target.value)} placeholder="Enter your name" required
+                  <label style={{ color: '#EEEEEE88', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Your Name *</label>
+                  <input type="text" value={feedbackName} onChange={e => setFeedbackName(e.target.value)} placeholder="Enter your name" required
                     style={{ width: '100%', backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '10px', padding: '12px 16px', color: '#EEEEEE', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
                     onFocus={e => e.target.style.borderColor = '#CF0A0A'} onBlur={e => e.target.style.borderColor = '#333'} />
                 </div>
@@ -1114,7 +995,7 @@ function Home() {
                   <label style={{ color: '#EEEEEE88', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Your Rating *</label>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     {[1,2,3,4,5].map(star => (
-                      <motion.button key={star} type="button" whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} onClick={() => setFeedbackRating(star)} aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+                      <motion.button key={star} type="button" whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} onClick={() => setFeedbackRating(star)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
                         <Star size={28} fill={star <= feedbackRating ? '#B8960C' : 'none'} style={{ color: star <= feedbackRating ? '#B8960C' : '#EEEEEE33' }} />
                       </motion.button>
                     ))}
@@ -1122,8 +1003,8 @@ function Home() {
                   </div>
                 </div>
                 <div style={{ marginBottom: '16px' }}>
-                  <label htmlFor="feedback-text" style={{ color: '#EEEEEE88', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Your Feedback *</label>
-                  <textarea id="feedback-text" value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="Tell us about your experience with M&J Traders..." required rows={4}
+                  <label style={{ color: '#EEEEEE88', fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '6px' }}>Your Feedback *</label>
+                  <textarea value={feedbackText} onChange={e => setFeedbackText(e.target.value)} placeholder="Tell us about your experience..." required rows={4}
                     style={{ width: '100%', backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '10px', padding: '12px 16px', color: '#EEEEEE', fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit' }}
                     onFocus={e => e.target.style.borderColor = '#CF0A0A'} onBlur={e => e.target.style.borderColor = '#333'} />
                 </div>
@@ -1138,16 +1019,14 @@ function Home() {
                   </label>
                   {feedbackImage && (
                     <div style={{ marginTop: '10px', position: 'relative' }}>
-                      <img src={feedbackImage} alt="Feedback photo preview" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #333' }} />
-                      <button type="button" onClick={() => setFeedbackImage(null)} aria-label="Remove photo" style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#CF0A0A', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}><X size={14} /></button>
+                      <img src={feedbackImage} alt="Preview" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #333' }} />
+                      <button type="button" onClick={() => setFeedbackImage(null)} style={{ position: 'absolute', top: '8px', right: '8px', backgroundColor: '#CF0A0A', border: 'none', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}><X size={14} /></button>
                     </div>
                   )}
                 </div>
                 <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} disabled={submittingFeedback}
                   style={{ width: '100%', backgroundColor: '#CF0A0A', color: 'white', border: 'none', borderRadius: '12px', padding: '14px', fontWeight: 700, fontSize: '15px', cursor: submittingFeedback ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', opacity: submittingFeedback ? 0.7 : 1 }}>
-                  {submittingFeedback
-                    ? <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%' }} />Submitting...</>
-                    : <><Send size={16} /> Submit Feedback</>}
+                  {submittingFeedback ? <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: '18px', height: '18px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%' }} />Submitting...</> : <><Send size={16} /> Submit Feedback</>}
                 </motion.button>
                 <p style={{ color: '#EEEEEE33', fontSize: '11px', textAlign: 'center', marginTop: '12px' }}>Your feedback will be reviewed before appearing publicly</p>
               </form>
@@ -1157,7 +1036,7 @@ function Home() {
       </AnimatePresence>
 
       {/* ===== FOOTER ===== */}
-      <footer role="contentinfo" style={{ backgroundColor: '#0a0a0a', borderTop: '1px solid #CF0A0A33', padding: '40px 16px 24px' }}>
+      <footer style={{ backgroundColor: '#0a0a0a', borderTop: '1px solid #CF0A0A33', padding: '40px 16px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '2px', marginBottom: '8px' }}>
@@ -1175,7 +1054,7 @@ function Home() {
               { href: 'https://www.tiktok.com/@m_j_traders',                   label: 'TikTok',    hoverColor: '#00f2ea', svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg> },
               { href: 'https://chat.whatsapp.com/BwtVVtkptoH7N8sH8Z2pV3',      label: 'WA Group',  hoverColor: '#25D366', svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> },
             ].map((s, i) => (
-              <motion.a key={i} href={s.href} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.12, y: -4 }} whileTap={{ scale: 0.95 }} aria-label={`M&J Traders on ${s.label}`}
+              <motion.a key={i} href={s.href} target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.12, y: -4 }} whileTap={{ scale: 0.95 }}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', textDecoration: 'none', backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '14px', padding: '12px 18px', minWidth: '74px', color: '#EEEEEE66', transition: 'all 0.25s' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor=s.hoverColor; e.currentTarget.style.backgroundColor=s.hoverColor+'15'; e.currentTarget.style.color=s.hoverColor }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.backgroundColor='#1a1a1a'; e.currentTarget.style.color='#EEEEEE66' }}>
@@ -1192,12 +1071,8 @@ function Home() {
       </footer>
 
       {/* ===== WHATSAPP HELP BUTTON ===== */}
-      <motion.button
-        initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.5, type: 'spring' }}
-        whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
+      <motion.button initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.5, type: 'spring' }} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}
         onClick={() => setShowHelp(!showHelp)}
-        aria-label="Open M&J Traders WhatsApp Customer Support"
-        aria-expanded={showHelp}
         style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 999, width: '58px', height: '58px', borderRadius: '50%', backgroundColor: '#25D366', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(37,211,102,0.5)' }}>
         <motion.div animate={{ rotate: showHelp ? 45 : 0 }} transition={{ duration: 0.3 }}>
           {showHelp ? <X size={26} color="white" /> : (
@@ -1206,19 +1081,13 @@ function Home() {
             </svg>
           )}
         </motion.div>
-        {!showHelp && (
-          <motion.div animate={{ scale: [1,1.5,1], opacity: [0.6,0,0.6] }} transition={{ duration: 2, repeat: Infinity }}
-            style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#25D366', zIndex: -1 }} />
-        )}
+        {!showHelp && <motion.div animate={{ scale: [1,1.5,1], opacity: [0.6,0,0.6] }} transition={{ duration: 2, repeat: Infinity }} style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#25D366', zIndex: -1 }} />}
       </motion.button>
 
       {/* ===== HELP POPUP ===== */}
       <AnimatePresence>
         {showHelp && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            role="dialog" aria-modal="true" aria-label="M&J Traders Help Center"
+          <motion.div initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.9 }} transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             style={{ position: 'fixed', bottom: '94px', right: '24px', zIndex: 998, backgroundColor: '#111', border: '1px solid #25D36644', borderRadius: '20px', padding: '20px', width: '290px', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#25D36622', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1233,12 +1102,11 @@ function Home() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
               {supportNumbers.map((support, idx) => (
                 <motion.button key={idx} whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.97 }} onClick={() => openWhatsApp(support.number)}
-                  aria-label={`Chat with ${support.name} on WhatsApp`}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: '#1a1a1a', border: '1px solid #25D36622', borderRadius: '14px', padding: '12px 14px', cursor: 'pointer', textAlign: 'left', width: '100%' }}
                   onMouseEnter={e => { e.currentTarget.style.backgroundColor='#25D36611'; e.currentTarget.style.borderColor='#25D36644' }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor='#1a1a1a'; e.currentTarget.style.borderColor='#25D36622' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', border: '2px solid #25D36644', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                    <img src={support.avatar} alt={`${support.name} — ${support.role} at M&J Traders`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#25D36622', border: '2px solid #25D36644', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                    <img src={support.avatar} alt={support.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <p style={{ color: '#EEEEEE', fontSize: '13px', fontWeight: 700, margin: 0 }}>{support.name}</p>
@@ -1262,6 +1130,7 @@ function Home() {
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
+
     </div>
   )
 }
