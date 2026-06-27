@@ -2,7 +2,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Star, ShoppingCart, ChevronRight, Shield, Truck, RotateCcw, Zap, Check } from 'lucide-react'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
 // ===== EXPANDED COLOR MAP =====
@@ -96,6 +96,7 @@ function OrderPage() {
   const navigate = useNavigate()
 
   const [product, setProduct] = useState(state?.product || null)
+  const [discount, setDiscount] = useState(null)
   const [loading, setLoading] = useState(!state?.product)
   const [quantity, setQuantity] = useState(1)
   const [selectedColor, setSelectedColor] = useState('')
@@ -103,6 +104,7 @@ function OrderPage() {
   const [selectedStorage, setSelectedStorage] = useState('')
   const [activeImage, setActiveImage] = useState(0)
 
+  // Fetch product
   useEffect(() => {
     if (!product && id) {
       const fetchProduct = async () => {
@@ -127,6 +129,41 @@ function OrderPage() {
     }
   }, [id])
 
+  // Fetch active discount for this product
+  useEffect(() => {
+    if (!id) return
+
+    const discountsQuery = query(
+      collection(db, 'discounts'),
+      where('isActive', '==', true),
+      where('productId', '==', id)
+    )
+
+    const unsubscribe = onSnapshot(discountsQuery, (snapshot) => {
+      if (!snapshot.empty) {
+        const discountData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))[0]
+        
+        // Check if discount is within valid date range
+        const today = new Date().toISOString().split('T')[0]
+        const startDate = discountData.startDate || '1970-01-01'
+        const endDate = discountData.endDate || '2099-12-31'
+        
+        if (today >= startDate && today <= endDate) {
+          console.log('Active Discount Found:', discountData)
+          setDiscount(discountData)
+        } else {
+          setDiscount(null)
+        }
+      } else {
+        setDiscount(null)
+      }
+    }, (error) => {
+      console.error('Discount Fetching Error:', error)
+    })
+
+    return () => unsubscribe()
+  }, [id])
+
   const initSelections = (data) => {
     const colorOpts = Array.isArray(data.colors) ? data.colors : (data.colors ? [data.colors] : [])
     setSelectedColor(colorOpts[0] || '')
@@ -136,17 +173,53 @@ function OrderPage() {
     setSelectedStorage(storageOpts[0] || data.storage || '')
   }
 
-  const getCurrentPrice = () => {
+  // Calculate price with discount
+  const getPriceInfo = () => {
+    let basePrice = 0
+    
     if (product?.variants?.length > 0) {
       const variant = product.variants.find(v => v.ram === selectedRam && v.storage === selectedStorage)
-      return variant ? Number(variant.price) : Number(product.price || product.sellPrice || 0)
+      basePrice = variant ? Number(variant.price) : Number(product.price || product.sellPrice || 0)
+    } else {
+      basePrice = Number(product?.price || product?.sellPrice || 0)
     }
-    return Number(product?.price || product?.sellPrice || 0)
+
+    // If there's an active discount from discounts collection
+    if (discount) {
+      return {
+        currentPrice: Number(discount.salePrice),
+        oldPrice: Number(discount.originalPrice),
+        discountPct: Number(discount.discountPercent),
+        hasActiveDiscount: true
+      }
+    }
+
+    // Fallback to product's own oldPrice
+    const oldPrice = Number(product?.oldPrice || 0)
+    return {
+      currentPrice: basePrice,
+      oldPrice: oldPrice,
+      discountPct: oldPrice > basePrice ? Math.round((1 - basePrice / oldPrice) * 100) : 0,
+      hasActiveDiscount: false
+    }
   }
 
   const handleProceedToCheckout = () => {
+    const priceInfo = getPriceInfo()
     navigate('/checkout', {
-      state: { product, selectedColor, selectedRam, selectedStorage, quantity, totalPrice: getCurrentPrice() * quantity }
+      state: { 
+        product: {
+          ...product,
+          price: priceInfo.currentPrice,
+          originalPrice: priceInfo.oldPrice,
+          discountApplied: priceInfo.hasActiveDiscount
+        }, 
+        selectedColor, 
+        selectedRam, 
+        selectedStorage, 
+        quantity, 
+        totalPrice: priceInfo.currentPrice * quantity 
+      }
     })
   }
 
@@ -171,9 +244,8 @@ function OrderPage() {
     )
   }
 
-  const currentPrice = getCurrentPrice()
-  const oldPrice = Number(product.oldPrice || 0)
-  const discountPct = oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0
+  const priceInfo = getPriceInfo()
+  const { currentPrice, oldPrice, discountPct, hasActiveDiscount } = priceInfo
   const productSpecs = specsConfig[product.category] || []
   const ramOptions = product.ramOptions || (product.ram ? [product.ram] : [])
   const storageOptions = product.storageOptions || (product.storage ? [product.storage] : [])
@@ -231,7 +303,19 @@ function OrderPage() {
 
             {/* Discount badge */}
             {discountPct > 0 && (
-              <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 3, backgroundColor: '#DC5F00', color: 'white', fontSize: '12px', fontWeight: 800, padding: '5px 12px', borderRadius: '50px' }}>
+              <div style={{ 
+                position: 'absolute', 
+                top: '16px', 
+                right: '16px', 
+                zIndex: 3, 
+                backgroundColor: hasActiveDiscount ? '#DC5F00' : '#DC5F00', 
+                color: 'white', 
+                fontSize: '12px', 
+                fontWeight: 800, 
+                padding: '5px 12px', 
+                borderRadius: '50px',
+                boxShadow: hasActiveDiscount ? '0 0 12px #DC5F0088' : 'none'
+              }}>
                 -{discountPct}% OFF
               </div>
             )}
@@ -314,6 +398,30 @@ function OrderPage() {
         <div>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
             style={{ backgroundColor: '#0f0f0f', border: '1px solid #1e1e1e', borderRadius: '24px', padding: '28px', position: 'sticky', top: '80px' }}>
+
+            {/* Active Discount Banner */}
+            {hasActiveDiscount && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }}
+                style={{ 
+                  backgroundColor: '#DC5F0015', 
+                  border: '1px solid #DC5F0044', 
+                  borderRadius: '12px', 
+                  padding: '12px 16px', 
+                  marginBottom: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px'
+                }}
+              >
+                <span style={{ fontSize: '20px' }}>🔥</span>
+                <div>
+                  <p style={{ color: '#DC5F00', fontSize: '13px', fontWeight: 800 }}>Special Discount Active!</p>
+                  <p style={{ color: '#EEEEEE66', fontSize: '11px' }}>Save {discountPct}% on this product</p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Price Section */}
             <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid #1e1e1e' }}>

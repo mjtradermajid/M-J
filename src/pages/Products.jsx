@@ -3,7 +3,7 @@ import { ShoppingCart, Star, Heart } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../firebase/config'
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore'
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore'
 
 const colorMap = {
   'Space Black': '#1a1a1a', 'Silver': '#C0C0C0', 'Gold': '#B8960C',
@@ -13,6 +13,7 @@ const colorMap = {
 
 function Products() {
   const [products, setProducts] = useState([])
+  const [discounts, setDiscounts] = useState([])
   const [wishlist, setWishlist] = useState([])
   const [cartCount, setCartCount] = useState(0)
   const [flyingItems, setFlyingItems] = useState([])
@@ -22,6 +23,7 @@ function Products() {
   const cartRef = useRef(null)
   const navigate = useNavigate()
 
+  // Fetch products
   useEffect(() => {
     const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'))
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -35,13 +37,73 @@ function Products() {
     return () => unsubscribe()
   }, [])
 
+  // Fetch active discounts
+  useEffect(() => {
+    const discountsQuery = query(
+      collection(db, 'discounts'),
+      where('isActive', '==', true)
+    )
+    
+    const unsubscribe = onSnapshot(discountsQuery, (snapshot) => {
+      const discountList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      
+      // Filter discounts that are currently valid (check date range)
+      const today = new Date().toISOString().split('T')[0] // "2026-06-27" format
+      const activeDiscounts = discountList.filter(discount => {
+        const startDate = discount.startDate || '1970-01-01'
+        const endDate = discount.endDate || '2099-12-31'
+        return today >= startDate && today <= endDate
+      })
+      
+      console.log('Active Discounts:', activeDiscounts) // Debug log
+      setDiscounts(activeDiscounts)
+    }, (error) => {
+      console.error('Discounts Fetching Error:', error)
+    })
+    
+    return () => unsubscribe()
+  }, [])
+
+  // Function to get applicable discount for a product
+  const getProductDiscount = (product) => {
+    const discount = discounts.find(d => d.productId === product.id)
+    return discount || null
+  }
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (product) => {
+    const originalPrice = Number(product.price || product.sellPrice || 0)
+    const discount = getProductDiscount(product)
+    
+    if (!discount) {
+      // No active discount - use product's own oldPrice if exists
+      return {
+        currentPrice: originalPrice,
+        oldPrice: Number(product.oldPrice || 0),
+        discountPct: product.oldPrice > originalPrice 
+          ? Math.round((1 - originalPrice / product.oldPrice) * 100) 
+          : 0,
+        hasActiveDiscount: false
+      }
+    }
+
+    // Use discount from discounts collection
+    return {
+      currentPrice: Number(discount.salePrice),
+      oldPrice: Number(discount.originalPrice),
+      discountPct: Number(discount.discountPercent),
+      hasActiveDiscount: true,
+      discountLabel: `${discount.discountPercent}% OFF`
+    }
+  }
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth)
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // ✅ Load cart count from localStorage (same source as Home.jsx and Cart.jsx)
+  // Load cart count from localStorage
   useEffect(() => {
     const loadCartCount = () => {
       try {
@@ -64,7 +126,7 @@ function Products() {
     setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
-  // ✅ Add to cart — saves to localStorage so it syncs with Home.jsx and Cart.jsx
+  // Add to cart with discounted price
   const handleAddToCart = (product, e) => {
     e.stopPropagation()
     const btn = e.currentTarget
@@ -83,10 +145,20 @@ function Products() {
       try {
         const existing = JSON.parse(localStorage.getItem('cart') || '[]')
         const idx = existing.findIndex(x => x.id === product.id)
+        
+        // Get discounted price for cart
+        const priceInfo = calculateDiscountedPrice(product)
+        const cartProduct = {
+          ...product,
+          price: priceInfo.currentPrice,
+          originalPrice: priceInfo.oldPrice,
+          discountApplied: priceInfo.hasActiveDiscount
+        }
+        
         if (idx > -1) {
           existing[idx].qty = (existing[idx].qty || 1) + 1
         } else {
-          existing.push({ ...product, qty: 1 })
+          existing.push({ ...cartProduct, qty: 1 })
         }
         localStorage.setItem('cart', JSON.stringify(existing))
         setCartCount(existing.reduce((sum, item) => sum + (item.qty || 1), 0))
@@ -183,9 +255,14 @@ function Products() {
           </div>
         ) : (
           products.map((product, i) => {
-            const currentPrice = Number(product.price || product.sellPrice || 0)
-            const oldPrice = Number(product.oldPrice || 0)
-            const discountPct = oldPrice > currentPrice ? Math.round((1 - currentPrice / oldPrice) * 100) : 0
+            // Use the discount calculation
+            const priceInfo = calculateDiscountedPrice(product)
+            const { currentPrice, oldPrice, discountPct, hasActiveDiscount, discountLabel } = priceInfo
+
+            // Determine badge - prioritize active discount badge
+            const displayBadge = hasActiveDiscount 
+              ? discountLabel 
+              : product.badge
 
             return (
               <motion.div
@@ -197,9 +274,21 @@ function Products() {
                 transition={{ delay: i * 0.04, type: 'spring', stiffness: 150 }}
                 style={{ backgroundColor: '#111111', border: '1px solid #222222', borderRadius: '14px', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
               >
-                {product.badge && (
-                  <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3, backgroundColor: product.badge === 'SALE' ? '#DC5F00' : product.badge === 'NEW' ? '#059669' : '#CF0A0A', color: 'white', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '20px', letterSpacing: '1px' }}>
-                    {product.badge.toUpperCase()}
+                {displayBadge && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    top: '8px', 
+                    left: '8px', 
+                    zIndex: 3, 
+                    backgroundColor: hasActiveDiscount ? '#DC5F00' : displayBadge === 'SALE' ? '#DC5F00' : displayBadge === 'NEW' ? '#059669' : '#CF0A0A', 
+                    color: 'white', 
+                    fontSize: '9px', 
+                    fontWeight: 800, 
+                    padding: '2px 8px', 
+                    borderRadius: '20px', 
+                    letterSpacing: '1px' 
+                  }}>
+                    {displayBadge}
                   </div>
                 )}
 
@@ -272,7 +361,7 @@ function Products() {
         )}
       </div>
 
-      {/* FOOTER - matching Home.jsx */}
+      {/* FOOTER */}
       <footer style={{ backgroundColor: '#0a0a0a', borderTop: '1px solid #CF0A0A33', padding: '40px 16px 24px', marginTop: 'auto' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
